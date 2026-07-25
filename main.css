@@ -42,7 +42,14 @@ body {
 .max-width-600 {
   max-width: 600px;
 }
-
+.company-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #38bdf8; /* Accent blue color */
+  margin-bottom: 6px;
+}
 .hidden {
   display: none !important;
 }
