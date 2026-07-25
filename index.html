@@ -36,9 +36,17 @@
   </div>
 
   <!-- Firebase Modular Web SDK -->
+ <!-- Firebase Modular Web SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { 
+      getFirestore, 
+      doc, 
+      getDoc, 
+      collection, 
+      addDoc, 
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // Your Firebase Configuration
     const firebaseConfig = {
@@ -68,12 +76,11 @@
 
       if (!idCode) return;
 
-      // Show loading state
       submitBtn.disabled = true;
       submitBtn.textContent = 'Verifying ID...';
 
       try {
-        // Query Firestore: Look up document matching ID code in 'students' collection
+        // 1. Look up student in 'students' collection
         const studentDocRef = doc(db, "students", idCode);
         const studentDocSnap = await getDoc(studentDocRef);
 
@@ -84,33 +91,39 @@
           return;
         }
 
-        // ✅ REGISTERED: Extract the student's name field from the database
+        // ✅ REGISTERED: Extract student name
         const studentData = studentDocSnap.data();
         const studentName = studentData.name || "Student";
 
-        // Check if student is already signed in on active session roster
-        let activeStudents = JSON.parse(localStorage.getItem('activeStudents')) || [];
-        const alreadySignedIn = activeStudents.some(s => s.idCode === idCode);
+        // Generate formatted local time and date
+        const now = new Date();
+        const currentTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const currentDate = now.toLocaleDateString();
 
-        if (alreadySignedIn) {
-          showMessage(`⚠️ Welcome back ${studentName}! You are already signed in.`, 'error');
-        } else {
-          // Add student to local roster with verified name
-          activeStudents.unshift({
-            idCode: idCode,
-            name: studentName,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          });
-          
-          localStorage.setItem('activeStudents', JSON.stringify(activeStudents));
-          
-          // Display personalized welcome message using database name
-          showMessage(`✓ Welcome, ${studentName}! Signed in successfully.`, 'success');
-          signInForm.reset();
-        }
+        // 2. RECORD SIGN-IN WITH TIME TO FIRESTORE 'attendance' COLLECTION
+        await addDoc(collection(db, "attendance"), {
+          idCode: idCode,
+          name: studentName,
+          timeString: currentTime,       // e.g. "10:15 AM"
+          dateString: currentDate,       // e.g. "7/25/2026"
+          timestamp: serverTimestamp()   // Precise Firestore server timestamp
+        });
+
+        // 3. Keep localStorage updated for instant local updates
+        let activeStudents = JSON.parse(localStorage.getItem('activeStudents')) || [];
+        activeStudents.unshift({
+          idCode: idCode,
+          name: studentName,
+          time: currentTime
+        });
+        localStorage.setItem('activeStudents', JSON.stringify(activeStudents));
+
+        // Display personalized welcome message
+        showMessage(`✓ Welcome, ${studentName}! Signed in at ${currentTime}.`, 'success');
+        signInForm.reset();
 
       } catch (error) {
-        console.error("Database lookup failed:", error);
+        console.error("Database lookup or write failed:", error);
         showMessage("Error reaching database. Check your internet connection.", "error");
       } finally {
         submitBtn.disabled = false;
