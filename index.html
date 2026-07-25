@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Sign In</title>
-  <link rel="stylesheet" href="main.css" />
+  <title>Student Sign In Station</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <div class="auth-container">
-    
-    <div class="auth-card">
+    <div class="auth-card" id="signInCard">
       <div class="card-header text-center">
         <h2>Student Sign In</h2>
-        <p>Enter your Student ID Code to log in.</p>
+        <p>Enter your Student ID Code to verify registration.</p>
       </div>
 
       <form class="auth-form" id="signInForm">
@@ -28,67 +28,94 @@
           />
         </div>
 
-        <button type="submit" class="btn btn-primary">Sign In</button>
+        <button type="submit" class="btn btn-primary" id="submitBtn">Sign In</button>
       </form>
 
-      <!-- Feedback message shown briefly on sign in -->
       <div id="statusMessage" class="status-message hidden"></div>
-      
-      <div class="card-footer">
-        <a href="admin.html" target="_blank" class="link-muted">View Signed-In Students Roster →</a>
-      </div>
     </div>
-
   </div>
 
-  <script>
+  <!-- Firebase Modular Web SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // 1. YOUR FIREBASE CONFIGURATION (Replace with your actual keys from Firebase Console)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // 2. Initialize Firebase & Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // DOM Elements
     const signInForm = document.getElementById('signInForm');
     const studentIdInput = document.getElementById('student-id');
     const statusMessage = document.getElementById('statusMessage');
+    const submitBtn = document.getElementById('submitBtn');
 
-    signInForm.addEventListener('submit', (e) => {
+    // 3. Handle Form Submit and Firebase Lookup
+    signInForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const idCode = studentIdInput.value.trim().toUpperCase();
 
       if (!idCode) return;
 
-      // Read current active students from localStorage
-      let activeStudents = JSON.parse(localStorage.getItem('activeStudents')) || [];
+      // Show loading state
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Checking database...';
 
-      // Check if already signed in
-      const alreadySignedIn = activeStudents.some(s => s.idCode === idCode);
-      if (alreadySignedIn) {
-        showMessage(`ID ${idCode} is already signed in!`, 'error');
-        return;
+      try {
+        // Query Firestore: Look in collection 'students' for document matching ID code
+        const studentDocRef = doc(db, "students", idCode);
+        const studentDocSnap = await getDoc(studentDocRef);
+
+        if (studentDocSnap.exists()) {
+          // STUDENT FOUND IN SCHOOL LIST
+          const studentData = studentDocSnap.data();
+          const studentName = studentData.name || "Student";
+
+          // Save active session to localStorage for the roster page
+          let activeStudents = JSON.parse(localStorage.getItem('activeStudents')) || [];
+          
+          if (!activeStudents.some(s => s.idCode === idCode)) {
+            activeStudents.unshift({
+              idCode: idCode,
+              name: studentName,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+            localStorage.setItem('activeStudents', JSON.stringify(activeStudents));
+            
+            showMessage(`✓ Welcome, ${studentName}! Signed in successfully.`, 'success');
+            signInForm.reset();
+          } else {
+            showMessage(`⚠ ID ${idCode} is already signed in.`, 'error');
+          }
+
+        } else {
+          // STUDENT NOT FOUND IN DATABASE
+          showMessage(`❌ ID Code "${idCode}" was not found on the school roster.`, 'error');
+        }
+
+      } catch (error) {
+        console.error("Database query failed:", error);
+        showMessage("Error reaching database. Check your internet connection.", "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In';
+        studentIdInput.focus();
       }
-
-      // Add new student entry
-      const newStudent = {
-        idCode: idCode,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-
-      activeStudents.unshift(newStudent);
-      
-      // Save back to localStorage
-      localStorage.setItem('activeStudents', JSON.stringify(activeStudents));
-
-      // Show temporary confirmation message
-      showMessage(`✓ Welcome! ID ${idCode} signed in successfully.`, 'success');
-
-      // Clear input form for next student
-      signInForm.reset();
-      studentIdInput.focus();
     });
 
     function showMessage(msg, type) {
       statusMessage.textContent = msg;
       statusMessage.className = `status-message ${type}`;
-      
-      // Hide message after 3 seconds
-      setTimeout(() => {
-        statusMessage.className = 'status-message hidden';
-      }, 3000);
     }
   </script>
 </body>
