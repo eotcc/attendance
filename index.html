@@ -4,7 +4,32 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Student Sign In Station</title>
-  <link rel="stylesheet" href="main.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .admin-link-container {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      text-align: center;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #94a3b8;
+      font-size: 0.85rem;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+  </style>
 </head>
 <body>
 
@@ -32,11 +57,15 @@
       </form>
 
       <div id="statusMessage" class="status-message hidden"></div>
+
+      <!-- Password Protected Roster Button -->
+      <div class="admin-link-container">
+        <button type="button" class="btn-secondary" id="rosterBtn">🔒 View Admin Roster</button>
+      </div>
     </div>
   </div>
 
   <!-- Firebase Modular Web SDK -->
- <!-- Firebase Modular Web SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -59,7 +88,7 @@
       measurementId: "G-G86K42XCE4"
     };
 
-    // Initialize Firebase & Firestore
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
@@ -68,6 +97,19 @@
     const studentIdInput = document.getElementById('student-id');
     const statusMessage = document.getElementById('statusMessage');
     const submitBtn = document.getElementById('submitBtn');
+    const rosterBtn = document.getElementById('rosterBtn');
+
+    // Password setup for Admin Access
+    const ADMIN_PASSWORD = "admin123"; // 🔑 Change this to your preferred password
+
+    rosterBtn.addEventListener('click', () => {
+      const inputPass = prompt("Enter Admin Password to access Roster:");
+      if (inputPass === ADMIN_PASSWORD) {
+        window.location.href = "roster.html";
+      } else if (inputPass !== null) {
+        alert("Incorrect Password!");
+      }
+    });
 
     // Handle Form Submit and Firebase Verification
     signInForm.addEventListener('submit', async (e) => {
@@ -80,45 +122,31 @@
       submitBtn.textContent = 'Verifying ID...';
 
       try {
-        // 1. Look up student in 'students' collection
         const studentDocRef = doc(db, "students", idCode);
         const studentDocSnap = await getDoc(studentDocRef);
 
         if (!studentDocSnap.exists()) {
-          // 🚫 REJECT: ID Code NOT found in Firestore
           showMessage(`❌ ID Code "${idCode}" is not registered on the school roster. Access denied.`, 'error');
           signInForm.reset();
           return;
         }
 
-        // ✅ REGISTERED: Extract student name
         const studentData = studentDocSnap.data();
         const studentName = studentData.name || "Student";
 
-        // Generate formatted local time and date
         const now = new Date();
         const currentTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const currentDate = now.toLocaleDateString();
 
-        // 2. RECORD SIGN-IN WITH TIME TO FIRESTORE 'attendance' COLLECTION
+        // Record entry into 'attendance' collection
         await addDoc(collection(db, "attendance"), {
           idCode: idCode,
           name: studentName,
-          timeString: currentTime,       // e.g. "10:15 AM"
-          dateString: currentDate,       // e.g. "7/25/2026"
-          timestamp: serverTimestamp()   // Precise Firestore server timestamp
+          timeString: currentTime,
+          dateString: currentDate,
+          timestamp: serverTimestamp()
         });
 
-        // 3. Keep localStorage updated for instant local updates
-        let activeStudents = JSON.parse(localStorage.getItem('activeStudents')) || [];
-        activeStudents.unshift({
-          idCode: idCode,
-          name: studentName,
-          time: currentTime
-        });
-        localStorage.setItem('activeStudents', JSON.stringify(activeStudents));
-
-        // Display personalized welcome message
         showMessage(`✓ Welcome, ${studentName}! Signed in at ${currentTime}.`, 'success');
         signInForm.reset();
 
