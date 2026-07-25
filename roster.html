@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Attendance Roster</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="roster-container">
+    <div class="roster-card">
+      
+      <div class="roster-header">
+        <h2>Live Attendance Roster</h2>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Time</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="rosterTableBody">
+            <tr>
+              <td colspan="4" class="empty-state">Loading attendance logs...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Firebase Modular Web SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getFirestore, 
+      collection, 
+      query, 
+      orderBy, 
+      onSnapshot 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Your Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
+      authDomain: "saturdaychurchschool.firebaseapp.com",
+      projectId: "saturdaychurchschool",
+      storageBucket: "saturdaychurchschool.firebasestorage.app",
+      messagingSenderId: "1098070001648",
+      appId: "1:1098070001648:web:3c27a2115eab6337853f35",
+      measurementId: "G-G86K42XCE4"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // DOM Elements
+    const rosterTableBody = document.getElementById('rosterTableBody');
+
+    // Live query for 'attendance' collection, ordered by timestamp descending
+    const attendanceQuery = query(collection(db, "attendance"), orderBy("timestamp", "desc"));
+
+    // Real-Time Listener
+    onSnapshot(attendanceQuery, (snapshot) => {
+      rosterTableBody.innerHTML = '';
+
+      if (snapshot.empty) {
+        rosterTableBody.innerHTML = `
+          <tr>
+            <td colspan="4" class="empty-state">No attendance records found yet.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${data.idCode || 'N/A'}</strong></td>
+          <td>${data.name || 'Unknown'}</td>
+          <td>${data.timeString || '—'}</td>
+          <td>${data.dateString || '—'}</td>
+        `;
+        
+        rosterTableBody.appendChild(row);
+      });
+    }, (error) => {
+      console.error("Error loading attendance records:", error);
+      rosterTableBody.innerHTML = `
+        <tr>
+          <td colspan="4" class="empty-state" style="color: #f87171;">
+            Failed to load records. Check database connection.
+          </td>
+        </tr>
+      `;
+    });
+  </script>
+</body>
+</html>
