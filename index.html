@@ -40,18 +40,18 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. YOUR FIREBASE CONFIGURATION (Replace with your actual keys from Firebase Console)
-   const firebaseConfig = {
-  apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
-  authDomain: "saturdaychurchschool.firebaseapp.com",
-  projectId: "saturdaychurchschool",
-  storageBucket: "saturdaychurchschool.firebasestorage.app",
-  messagingSenderId: "1098070001648",
-  appId: "1:1098070001648:web:3c27a2115eab6337853f35",
-  measurementId: "G-G86K42XCE4"
-};
+    // Your Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
+      authDomain: "saturdaychurchschool.firebaseapp.com",
+      projectId: "saturdaychurchschool",
+      storageBucket: "saturdaychurchschool.firebasestorage.app",
+      messagingSenderId: "1098070001648",
+      appId: "1:1098070001648:web:3c27a2115eab6337853f35",
+      measurementId: "G-G86K42XCE4"
+    };
 
-    // 2. Initialize Firebase & Firestore
+    // Initialize Firebase & Firestore
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
@@ -61,7 +61,7 @@
     const statusMessage = document.getElementById('statusMessage');
     const submitBtn = document.getElementById('submitBtn');
 
-    // 3. Handle Form Submit and Firebase Lookup
+    // Handle Form Submit and Firebase Verification
     signInForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const idCode = studentIdInput.value.trim().toUpperCase();
@@ -70,42 +70,47 @@
 
       // Show loading state
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Checking database...';
+      submitBtn.textContent = 'Verifying ID...';
 
       try {
-        // Query Firestore: Look in collection 'students' for document matching ID code
+        // Query Firestore: Look up document matching ID code in 'students' collection
         const studentDocRef = doc(db, "students", idCode);
         const studentDocSnap = await getDoc(studentDocRef);
 
-        if (studentDocSnap.exists()) {
-          // STUDENT FOUND IN SCHOOL LIST
-          const studentData = studentDocSnap.data();
-          const studentName = studentData.name || "Student";
+        if (!studentDocSnap.exists()) {
+          // 🚫 REJECT: ID Code NOT found in Firestore
+          showMessage(`❌ ID Code "${idCode}" is not registered on the school roster. Access denied.`, 'error');
+          signInForm.reset();
+          return;
+        }
 
-          // Save active session to localStorage for the roster page
-          let activeStudents = JSON.parse(localStorage.getItem('activeStudents')) || [];
-          
-          if (!activeStudents.some(s => s.idCode === idCode)) {
-            activeStudents.unshift({
-              idCode: idCode,
-              name: studentName,
-              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            });
-            localStorage.setItem('activeStudents', JSON.stringify(activeStudents));
-            
-            showMessage(`✓ Welcome, ${studentName}! Signed in successfully.`, 'success');
-            signInForm.reset();
-          } else {
-            showMessage(`⚠ ID ${idCode} is already signed in.`, 'error');
-          }
+        // ✅ REGISTERED: Extract the student's name field from the database
+        const studentData = studentDocSnap.data();
+        const studentName = studentData.name || "Student";
 
+        // Check if student is already signed in on active session roster
+        let activeStudents = JSON.parse(localStorage.getItem('activeStudents')) || [];
+        const alreadySignedIn = activeStudents.some(s => s.idCode === idCode);
+
+        if (alreadySignedIn) {
+          showMessage(`⚠️ Welcome back ${studentName}! You are already signed in.`, 'error');
         } else {
-          // STUDENT NOT FOUND IN DATABASE
-          showMessage(`❌ ID Code "${idCode}" was not found on the school roster.`, 'error');
+          // Add student to local roster with verified name
+          activeStudents.unshift({
+            idCode: idCode,
+            name: studentName,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          });
+          
+          localStorage.setItem('activeStudents', JSON.stringify(activeStudents));
+          
+          // Display personalized welcome message using database name
+          showMessage(`✓ Welcome, ${studentName}! Signed in successfully.`, 'success');
+          signInForm.reset();
         }
 
       } catch (error) {
-        console.error("Database query failed:", error);
+        console.error("Database lookup failed:", error);
         showMessage("Error reaching database. Check your internet connection.", "error");
       } finally {
         submitBtn.disabled = false;
