@@ -30,7 +30,7 @@ body {
   /* Dark tint overlay + background image path */
   background: 
     linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)),
-    url('background.jpg') no-repeat center center fixed;
+    url('logo.png') no-repeat center center fixed;
   background-size: cover;
   color: #f8fafc;
   display: flex;
