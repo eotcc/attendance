@@ -1,226 +1,201 @@
-/* ==========================================
-   RESET & BASE STYLES
-   ========================================== */
+/* Base Resets */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
 body {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  background-color: #0f172a;
   color: #f8fafc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-/* ==========================================
-   GLASSMORPHISM CONTAINER & CARDS
-   ========================================== */
-.auth-container,
-.roster-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.auth-card,
-.roster-card {
-  width: 100%;
-  max-width: 480px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 20px;
-  padding: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  min-height: 100vh;
+  padding: 32px 16px;
 }
 
 .roster-container {
   max-width: 900px;
+  margin: 0 auto;
 }
 
 .roster-card {
-  max-width: 100%;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
 
-/* ==========================================
-   HEADERS & TYPOGRAPHY
-   ========================================== */
-.card-header,
-.roster-header {
-  margin-bottom: 24px;
-}
-
-.text-center {
-  text-align: center;
-}
-
-h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-  letter-spacing: -0.5px;
-}
-
-p {
-  color: #94a3b8;
-  font-size: 0.95rem;
-}
-
-/* ==========================================
-   FORM ELEMENTS
-   ========================================== */
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;
-}
-
-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #cbd5e1;
-}
-
-input[type="text"] {
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.25);
-  color: #ffffff;
-  font-size: 1.05rem;
-  outline: none;
-  transition: all 0.2s ease-in-out;
-}
-
-input[type="text"]:focus {
-  border-color: #38bdf8;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
-  background: rgba(0, 0, 0, 0.4);
-}
-
-/* ==========================================
-   BUTTONS
-   ========================================== */
-.btn {
-  width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-  transform: translateY(-1px);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* ==========================================
-   STATUS MESSAGES
-   ========================================== */
-.status-message {
-  margin-top: 20px;
-  padding: 14px 16px;
-  border-radius: 10px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.status-message.hidden {
-  display: none;
-}
-
-.status-message.success {
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid rgba(34, 197, 94, 0.4);
-  color: #4ade80;
-}
-
-.status-message.error {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  color: #f87171;
-}
-
-/* ==========================================
-   ROSTER TABLE STYLES
-   ========================================== */
+/* Header & Nav */
 .roster-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 24px;
   padding-bottom: 16px;
+  border-bottom: 1px solid #334155;
 }
 
-.badge {
-  background: #22c55e;
+.roster-header h2 {
+  font-size: 1.4rem;
   color: #ffffff;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.85rem;
   font-weight: 700;
 }
 
+.live-clock {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #38bdf8;
+  margin-top: 4px;
+  font-family: monospace;
+}
+
+.nav-btn {
+  background-color: #0284c7;
+  color: #ffffff;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.nav-btn:hover {
+  background-color: #0369a1;
+}
+
+/* Table Styles (for roster.html) */
 table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  margin-top: 10px;
-}
-
-th, td {
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 th {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: #0f172a;
+  color: #38bdf8;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #334155;
+}
+
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #334155;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
+
+tr:hover td {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Toolbar & Search Input (for daysattend.html) */
+.toolbar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background-color: #0f172a;
+  color: #ffffff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: #38bdf8;
+}
+
+/* Monthly Student Cards (for daysattend.html) */
+.student-card {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.student-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #334155;
+  margin-bottom: 14px;
+}
+
+.student-name {
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.student-id {
+  color: #38bdf8;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.month-row {
+  margin-top: 12px;
+}
+
+.month-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.month-label {
+  font-weight: 600;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.badge-count {
+  background-color: #0284c7;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.dates-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.date-tag {
+  background-color: #1e293b;
+  border: 1px solid #334155;
   color: #94a3b8;
   font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 6px;
 }
 
-tr:hover {
-  background-color: rgba(255, 255, 255, 0.04);
-}
-
+/* States & Utilities */
 .empty-state {
   text-align: center;
-  padding: 40px;
-  color: #94a3b8;
+  padding: 32px;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.error-text {
+  color: #f87171 !important;
 }
