@@ -3,125 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Monthly Days Attendance</title>
+  <title>Admin - Attendance Roster</title>
   <link rel="stylesheet" href="roster.css" />
-  <style>
-    /* Specific styles for days attendance layout */
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    .search-input {
-      flex: 1;
-      min-width: 220px;
-      padding: 10px 14px;
-      border-radius: 6px;
-      border: 1px solid #334155;
-      background-color: #1e293b;
-      color: #ffffff;
-      font-size: 0.95rem;
-      outline: none;
-    }
-    .search-input:focus {
-      border-color: #38bdf8;
-    }
-    .student-card {
-      background-color: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 18px;
-      margin-bottom: 16px;
-    }
-    .student-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #334155;
-      margin-bottom: 14px;
-    }
-    .student-name {
-      font-size: 1.15rem;
-      font-weight: bold;
-      color: #ffffff;
-    }
-    .student-id {
-      color: #38bdf8;
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-    .month-row {
-      margin-top: 12px;
-    }
-    .month-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .month-label {
-      font-weight: 600;
-      color: #cbd5e1;
-      font-size: 0.95rem;
-    }
-    .badge-count {
-      background-color: #0284c7;
-      color: #ffffff;
-      font-size: 0.8rem;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 12px;
-    }
-    .dates-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .date-tag {
-      background-color: #0f172a;
-      border: 1px solid #334155;
-      color: #94a3b8;
-      font-size: 0.8rem;
-      padding: 4px 10px;
-      border-radius: 6px;
-    }
-  </style>
 </head>
 <body>
 
   <div class="roster-container">
     <div class="roster-card">
       
-      <!-- Header with Navigation back to Roster -->
+      <!-- Header with Live Clock & Navigation -->
       <div class="roster-header">
-        <h2>Monthly Days Attended</h2>
-        <button onclick="window.location.href='roster.html'">
-          ← Back to Live Roster
+        <div>
+          <h2>Live Attendance Roster</h2>
+          <div id="liveClock" class="live-clock">Loading time...</div>
+        </div>
+        <button class="nav-btn" onclick="window.location.href='daysattend.html'">
+          Students
         </button>
       </div>
 
-      <!-- Search Toolbar -->
-      <div class="toolbar">
-        <input 
-          type="text" 
-          id="searchInput" 
-          class="search-input" 
-          placeholder="Search by Name or Student ID..." 
-          autocomplete="off"
-        />
-      </div>
-
-      <!-- Container for Student Monthly Summary Cards -->
-      <div id="cardsContainer">
-        <div class="empty-state">Loading attendance totals...</div>
+      <!-- Real-Time Check-In Table -->
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Time</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="rosterTableBody">
+            <tr>
+              <td colspan="4" class="empty-state">Loading attendance logs...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
     </div>
   </div>
+
+  <!-- Live Clock Script -->
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const dateString = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('liveClock').textContent = `${dateString} | ${timeString}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
 
   <!-- Firebase Modular Web SDK -->
   <script type="module">
@@ -134,7 +67,6 @@
       onSnapshot 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Your exact Firebase Configuration from roster.html
     const firebaseConfig = {
       apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
       authDomain: "saturdaychurchschool.firebaseapp.com",
@@ -145,129 +77,47 @@
       measurementId: "G-G86K42XCE4"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const cardsContainer = document.getElementById('cardsContainer');
-    const searchInput = document.getElementById('searchInput');
-
-    let allDocs = [];
-
-    // Query 'attendance' collection ordered by timestamp
+    const rosterTableBody = document.getElementById('rosterTableBody');
     const attendanceQuery = query(collection(db, "attendance"), orderBy("timestamp", "desc"));
 
-    // Listen for live updates
     onSnapshot(attendanceQuery, (snapshot) => {
-      allDocs = [];
-      snapshot.forEach((doc) => {
-        allDocs.push(doc.data());
-      });
-      renderCards();
-    }, (error) => {
-      console.error("Error loading records:", error);
-      cardsContainer.innerHTML = `<div class="empty-state" style="color: #f87171;">Failed to load attendance records.</div>`;
-    });
+      rosterTableBody.innerHTML = '';
 
-    function processAttendance(searchTerm = "") {
-      const grouped = {};
-
-      allDocs.forEach((data) => {
-        const idCode = data.idCode || "UNKNOWN";
-        const name = data.name || "Student";
-        const dateStr = data.dateString || "";
-
-        // Filter match check
-        const matchesSearch = 
-          idCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          name.toLowerCase().includes(searchTerm.toLowerCase());
-
-        if (!matchesSearch) return;
-
-        // Determine month key (e.g. "August 2026")
-        let parsedDate = new Date(dateStr);
-        if (isNaN(parsedDate.getTime()) && data.timestamp) {
-          parsedDate = data.timestamp.toDate();
-        }
-
-        const monthName = parsedDate.toLocaleString("default", {
-          month: "long",
-          year: "numeric"
-        });
-
-        const dayFormatted = parsedDate.toLocaleDateString();
-
-        if (!grouped[idCode]) {
-          grouped[idCode] = {
-            name: name,
-            months: {}
-          };
-        }
-
-        if (!grouped[idCode].months[monthName]) {
-          grouped[idCode].months[monthName] = new Set();
-        }
-
-        if (dayFormatted && dayFormatted !== "Invalid Date") {
-          grouped[idCode].months[monthName].add(dayFormatted);
-        }
-      });
-
-      return grouped;
-    }
-
-    function renderCards() {
-      const filterTerm = searchInput.value.trim();
-      const groupedData = processAttendance(filterTerm);
-      cardsContainer.innerHTML = '';
-
-      const studentIds = Object.keys(groupedData);
-
-      if (studentIds.length === 0) {
-        cardsContainer.innerHTML = `<div class="empty-state">No student attendance records found.</div>`;
+      if (snapshot.empty) {
+        rosterTableBody.innerHTML = `
+          <tr>
+            <td colspan="4" class="empty-state">No attendance records found yet.</td>
+          </tr>
+        `;
         return;
       }
 
-      studentIds.forEach((idCode) => {
-        const student = groupedData[idCode];
-        const card = document.createElement('div');
-        card.className = 'student-card';
-
-        let monthsHtml = '';
-
-        for (const [monthName, datesSet] of Object.entries(student.months)) {
-          const uniqueDates = Array.from(datesSet);
-          const dateChips = uniqueDates
-            .map((d) => `<span class="date-tag">${d}</span>`)
-            .join('');
-
-          monthsHtml += `
-            <div class="month-row">
-              <div class="month-meta">
-                <span class="month-label">${monthName}</span>
-                <span class="badge-count">${uniqueDates.length} Day(s)</span>
-              </div>
-              <div class="dates-container">
-                ${dateChips}
-              </div>
-            </div>
-          `;
-        }
-
-        card.innerHTML = `
-          <div class="student-head">
-            <span class="student-name">${student.name}</span>
-            <span class="student-id">ID: ${idCode}</span>
-          </div>
-          ${monthsHtml}
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${data.idCode || 'N/A'}</strong></td>
+          <td>${data.name || 'Unknown'}</td>
+          <td>${data.timeString || '—'}</td>
+          <td>${data.dateString || '—'}</td>
         `;
-
-        cardsContainer.appendChild(card);
+        
+        rosterTableBody.appendChild(row);
       });
-    }
-
-    // Live search listener
-    searchInput.addEventListener('input', renderCards);
+    }, (error) => {
+      console.error("Error loading attendance records:", error);
+      rosterTableBody.innerHTML = `
+        <tr>
+          <td colspan="4" class="empty-state error-text">
+            Failed to load records. Check database connection.
+          </td>
+        </tr>
+      `;
+    });
   </script>
 </body>
 </html>
