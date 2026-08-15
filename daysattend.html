@@ -3,24 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Recorded Student Attendance</title>
-  <link rel="stylesheet" href="daysattend.css" />
+  <title>Admin - Monthly Days Attendance</title>
+  <link rel="stylesheet" href="roster.css" />
 </head>
 <body>
 
-  <div class="records-container">
-    <header class="header">
-      <h1 class="company-title">ናርዶስ አስጠኚ</h1>
-      <h2>Student Entry Records</h2>
-      <p>List of entered codes, dates recorded, and monthly totals</p>
-    </header>
+  <div class="roster-container">
+    <div class="roster-card">
+      
+      <!-- Header with Navigation back to Live Roster -->
+      <div class="roster-header">
+        <h2>Monthly Days Attended</h2>
+        <button class="nav-btn" onclick="window.location.href='roster.html'">
+          ← Back to Live Roster
+        </button>
+      </div>
 
-    <!-- Main Output Area -->
-    <div id="recordsList" class="records-list">
-      <!-- Data renders here dynamically -->
+      <!-- Search Toolbar -->
+      <div class="toolbar">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Search by Name or Student ID..." 
+          autocomplete="off"
+        />
+      </div>
+
+      <!-- Monthly Student Cards Container -->
+      <div id="cardsContainer">
+        <div class="empty-state">Loading attendance totals...</div>
+      </div>
+
     </div>
   </div>
 
-  <script src="dayattend.js"></script>
+  <!-- Firebase Modular Web SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getFirestore, 
+      collection, 
+      query, 
+      orderBy, 
+      onSnapshot 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
+      authDomain: "saturdaychurchschool.firebaseapp.com",
+      projectId: "saturdaychurchschool",
+      storageBucket: "saturdaychurchschool.firebasestorage.app",
+      messagingSenderId: "1098070001648",
+      appId: "1:1098070001648:web:3c27a2115eab6337853f35",
+      measurementId: "G-G86K42XCE4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const cardsContainer = document.getElementById('cardsContainer');
+    const searchInput = document.getElementById('searchInput');
+
+    let allDocs = [];
+
+    const attendanceQuery = query(collection(db, "attendance"), orderBy("timestamp", "desc"));
+
+    onSnapshot(attendanceQuery, (snapshot) => {
+      allDocs = [];
+      snapshot.forEach((doc) => {
+        allDocs.push(doc.data());
+      });
+      renderCards();
+    }, (error) => {
+      console.error("Error loading records:", error);
+      cardsContainer.innerHTML = `<div class="empty-state error-text">Failed to load attendance records.</div>`;
+    });
+
+    function processAttendance(searchTerm = "") {
+      const grouped = {};
+
+      allDocs.forEach((data) => {
+        const idCode = data.idCode || "UNKNOWN";
+        const name = data.name || "Student";
+        const dateStr = data.dateString || "";
+
+        const matchesSearch = 
+          idCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          name.toLowerCase().includes(searchTerm.toLowerCase());
+
+        if (!matchesSearch) return;
+
+        let parsedDate = new Date(dateStr);
+        if (isNaN(parsedDate.getTime()) && data.timestamp) {
+          parsedDate = data.timestamp.toDate();
+        }
+
+        const monthName = parsedDate.toLocaleString("default", {
+          month: "long",
+          year: "numeric"
+        });
+
+        const dayFormatted = parsedDate.toLocaleDateString();
+
+        if (!grouped[idCode]) {
+          grouped[idCode] = {
+            name: name,
+            months: {}
+          };
+        }
+
+        if (!grouped[idCode].months[monthName]) {
+          grouped[idCode].months[monthName] = new Set();
+        }
+
+        if (dayFormatted && dayFormatted !== "Invalid Date") {
+          grouped[idCode].months[monthName].add(dayFormatted);
+        }
+      });
+
+      return grouped;
+    }
+
+    function renderCards() {
+      const filterTerm = searchInput.value.trim();
+      const groupedData = processAttendance(filterTerm);
+      cardsContainer.innerHTML = '';
+
+      const studentIds = Object.keys(groupedData);
+
+      if (studentIds.length === 0) {
+        cardsContainer.innerHTML = `<div class="empty-state">No student attendance records found.</div>`;
+        return;
+      }
+
+      studentIds.forEach((idCode) => {
+        const student = groupedData[idCode];
+        const card = document.createElement('div');
+        card.className = 'student-card';
+
+        let monthsHtml = '';
+
+        for (const [monthName, datesSet] of Object.entries(student.months)) {
+          const uniqueDates = Array.from(datesSet);
+          const dateChips = uniqueDates
+            .map((d) => `<span class="date-tag">${d}</span>`)
+            .join('');
+
+          monthsHtml += `
+            <div class="month-row">
+              <div class="month-meta">
+                <span class="month-label">${monthName}</span>
+                <span class="badge-count">${uniqueDates.length} Day(s)</span>
+              </div>
+              <div class="dates-container">
+                ${dateChips}
+              </div>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="student-head">
+            <span class="student-name">${student.name}</span>
+            <span class="student-id">ID: ${idCode}</span>
+          </div>
+          ${monthsHtml}
+        `;
+
+        cardsContainer.appendChild(card);
+      });
+    }
+
+    searchInput.addEventListener('input', renderCards);
+  </script>
 </body>
 </html>
