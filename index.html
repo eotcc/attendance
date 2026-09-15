@@ -154,7 +154,7 @@
         showMessage(`✓ Welcome, ${studentName}! Signed in at ${currentTime}.`, 'success');
         signInForm.reset();
 
-      } } catch (error) {
+      }  catch (error) {
   console.error("Database lookup or write failed:", error);
 
   showMessage(
@@ -167,7 +167,7 @@
         studentIdInput.focus();
       }
     });
-    }
+    
     function showMessage(msg, type) {
       statusMessage.textContent = msg;
       statusMessage.className = `status-message ${type}`;
