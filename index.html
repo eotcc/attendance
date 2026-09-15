@@ -154,9 +154,13 @@
         showMessage(`✓ Welcome, ${studentName}! Signed in at ${currentTime}.`, 'success');
         signInForm.reset();
 
-      } catch (error) {
-        console.error("Database lookup or write failed:", error);
-        showMessage("Error reaching database. Check your internet connection.", "error");
+      } } catch (error) {
+  console.error("Database lookup or write failed:", error);
+
+  showMessage(
+    `Database error: ${error.code || "unknown"} — ${error.message || error}`,
+    "error"
+  );
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Sign In';
