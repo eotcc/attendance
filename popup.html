@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Connect Account</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Button that opens the popup -->
+  <button class="open-btn" onclick="openPopup()">
+    Connect Account
+  </button>
+
+  <!-- Popup -->
+  <div class="popup" id="accountPopup">
+
+    <div class="popup-box">
+
+      <button class="close-btn" onclick="closePopup()">×</button>
+
+      <h2>Connect Your Account</h2>
+
+      <p>Continue below to connect your account.</p>
+
+      <!-- Helcim code will go here -->
+      <div id="helcim-container"></div>
+
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
