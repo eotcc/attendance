@@ -100,6 +100,7 @@ svg {
 .card-header h2 {
   font-size: 1.3rem;
   font-weight: 600;
+  text-align: left;
 }
 
 .card-header p {
