@@ -60,7 +60,7 @@ svg {
 .company-logo {
   display: block;
   width: 50px;
-  height: 50px;
+  height: 10px;
   object-fit: contain;
   margin: 0 auto 12px auto;
 }
