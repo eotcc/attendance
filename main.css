@@ -59,8 +59,8 @@ svg {
 }
 .company-logo {
   display: block;
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   object-fit: contain;
   margin: 0 auto 12px auto;
 }
