@@ -64,6 +64,7 @@ svg {
   height: 150px;
   object-fit: contain;
   margin: 0 auto 12px auto;
+  marginleft: 5px;
 }
 .hidden {
   display: none !important;
