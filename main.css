@@ -27,19 +27,7 @@
 
 body {
   min-height: 100vh;
-  /* Dark tint overlay + background image path */
   background: white;
-    color
-    url('logo.jpg') no-repeat center center fixed;
-  img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    opacity: 1;
-    visibility: visible;
-}
-  .icon,
-i,
 svg {
     color: #000000;
     fill: #000000;
