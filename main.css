@@ -56,7 +56,7 @@ svg {
   letter-spacing: 2px;
   color: #38bdf8; /* Accent blue color */
   margin-bottom: 6px;
-  margin-left: 0;
+  text-align: left !important;
 }
 .company-logo {
   display: block;
