@@ -57,6 +57,13 @@ svg {
   color: #38bdf8; /* Accent blue color */
   margin-bottom: 6px;
 }
+.company-logo {
+  display: block;
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin: 0 auto 12px auto;
+}
 .hidden {
   display: none !important;
 }
