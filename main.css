@@ -56,6 +56,7 @@ svg {
   letter-spacing: 2px;
   color: #38bdf8; /* Accent blue color */
   margin-bottom: 6px;
+  margin-left: 10px;
 }
 .company-logo {
   display: block;
@@ -100,7 +101,6 @@ svg {
 .card-header h2 {
   font-size: 1.3rem;
   font-weight: 600;
-  text-align: left;
 }
 
 .card-header p {
