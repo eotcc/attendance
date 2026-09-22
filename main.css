@@ -66,6 +66,7 @@ svg {
   object-fit: contain;
   margin: 0 auto 12px auto;
   text-align: left !important;
+  tranform: translateX(-100px);
 }
 .hidden {
   display: none !important;
