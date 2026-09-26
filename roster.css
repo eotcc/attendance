@@ -49,6 +49,16 @@ body {
   margin-top: 4px;
   font-family: monospace;
 }
+.countdown {
+  font-weight: bold;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+.expired {
+  color: #dc2626;
+  font-weight: bold;
+}
 
 .nav-btn {
   background-color: #0284c7;
