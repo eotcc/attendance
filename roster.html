@@ -31,6 +31,7 @@
               <th>Name</th>
               <th>Time</th>
               <th>Date</th>
+              <th>Time Remaining</th>
             </tr>
           </thead>
           <tbody id="rosterTableBody">
@@ -58,66 +59,154 @@
 
   <!-- Firebase Modular Web SDK -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { 
-      getFirestore, 
-      collection, 
-      query, 
-      orderBy, 
-      onSnapshot 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
-      authDomain: "saturdaychurchschool.firebaseapp.com",
-      projectId: "saturdaychurchschool",
-      storageBucket: "saturdaychurchschool.firebasestorage.app",
-      messagingSenderId: "1098070001648",
-      appId: "1:1098070001648:web:3c27a2115eab6337853f35",
-      measurementId: "G-G86K42XCE4"
-    };
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
+  authDomain: "saturdaychurchschool.firebaseapp.com",
+  projectId: "saturdaychurchschool",
+  storageBucket: "saturdaychurchschool.firebasestorage.app",
+  messagingSenderId: "1098070001648",
+  appId: "1:1098070001648:web:3c27a2115eab6337853f35",
+  measurementId: "G-G86K42XCE4"
+};
 
-    const rosterTableBody = document.getElementById('rosterTableBody');
-    const attendanceQuery = query(collection(db, "attendance"), orderBy("timestamp", "desc"));
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    onSnapshot(attendanceQuery, (snapshot) => {
-      rosterTableBody.innerHTML = '';
+const rosterTableBody = document.getElementById('rosterTableBody');
 
-      if (snapshot.empty) {
-        rosterTableBody.innerHTML = `
-          <tr>
-            <td colspan="4" class="empty-state">No attendance records found yet.</td>
-          </tr>
-        `;
-        return;
-      }
+const attendanceQuery = query(
+  collection(db, "attendance"),
+  orderBy("timestamp", "desc")
+);
 
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td><strong>${data.idCode || 'N/A'}</strong></td>
-          <td>${data.name || 'Unknown'}</td>
-          <td>${data.timeString || '—'}</td>
-          <td>${data.dateString || '—'}</td>
-        `;
-        
-        rosterTableBody.appendChild(row);
-      });
-    }, (error) => {
-      console.error("Error loading attendance records:", error);
+// Store every student's countdown
+const countdowns = new Map();
+
+function formatTime(milliseconds) {
+
+  if (milliseconds <= 0) {
+    return "Time Expired";
+  }
+
+  const totalSeconds = Math.floor(milliseconds / 1000);
+
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function updateCountdowns() {
+
+  const now = Date.now();
+
+  countdowns.forEach((endTime, element) => {
+
+    const remaining = endTime - now;
+
+    element.textContent = formatTime(remaining);
+
+    if (remaining <= 0) {
+      element.classList.add("expired");
+    } else {
+      element.classList.remove("expired");
+    }
+
+  });
+}
+
+// Update every second
+setInterval(updateCountdowns, 1000);
+
+onSnapshot(
+  attendanceQuery,
+  (snapshot) => {
+
+    rosterTableBody.innerHTML = '';
+
+    countdowns.clear();
+
+    if (snapshot.empty) {
+
       rosterTableBody.innerHTML = `
         <tr>
-          <td colspan="4" class="empty-state error-text">
-            Failed to load records. Check database connection.
+          <td colspan="5" class="empty-state">
+            No attendance records found yet.
           </td>
         </tr>
       `;
+
+      return;
+    }
+
+    snapshot.forEach((docSnapshot) => {
+
+      const data = docSnapshot.data();
+
+      const row = document.createElement('tr');
+
+      const countdownCell = document.createElement('td');
+
+      countdownCell.className = "countdown";
+
+      if (data.timestamp) {
+
+        const signInTime = data.timestamp.toDate().getTime();
+
+        // 2 hours = 2 × 60 × 60 × 1000 milliseconds
+        const endTime = signInTime + (2 * 60 * 60 * 1000);
+
+        countdowns.set(countdownCell, endTime);
+
+        countdownCell.textContent = formatTime(endTime - Date.now());
+
+      } else {
+
+        countdownCell.textContent = "Starting...";
+
+      }
+
+      row.innerHTML = `
+        <td><strong>${data.idCode || 'N/A'}</strong></td>
+        <td>${data.name || 'Unknown'}</td>
+        <td>${data.timeString || '—'}</td>
+        <td>${data.dateString || '—'}</td>
+      `;
+
+      row.appendChild(countdownCell);
+
+      rosterTableBody.appendChild(row);
+
     });
-  </script>
+
+    updateCountdowns();
+
+  },
+  (error) => {
+
+    console.error("Error loading attendance records:", error);
+
+    rosterTableBody.innerHTML = `
+      <tr>
+        <td colspan="5" class="empty-state error-text">
+          Failed to load records. Check database connection.
+        </td>
+      </tr>
+    `;
+
+  }
+);
+</script>
 </body>
 </html>
