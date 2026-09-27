@@ -1,7 +1,7 @@
 /* --- CSS Reset & Custom Properties --- */
 :root {
-  --primary-color: #4f46e5;
-  --primary-hover: #4338ca;
+  --primary-color: #A9A9A9;
+  --primary-hover: #A9A9A9;
   --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
   --card-bg: rgba(255, 255, 255, 0.05);
   --card-border: rgba(255, 255, 255, 0.1);
