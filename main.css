@@ -84,6 +84,10 @@ svg {
   flex-direction: column;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
+.auth-card h2 {
+  color: #4a4a4a;
+  text-align: center;
+}
 
 /* --- Headers & Typography --- */
 .card-header {
