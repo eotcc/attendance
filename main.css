@@ -6,7 +6,7 @@
   --card-bg: rgba(255, 255, 255, 0.05);
   --card-border: rgba(255, 255, 255, 0.1);
   --text-main: #f8fafc;
-  --text-muted: #94a3b8;
+  --text-muted: #A9A9A9;
   --input-bg: rgba(15, 23, 42, 0.6);
   --input-border: rgba(255, 255, 255, 0.15);
   --danger-color: #ef4444;
@@ -104,7 +104,6 @@ svg {
 .card-header h2 {
   font-size: 1.3rem;
   font-weight: 600;
-   color: #A9A9A9;
 }
 
 .card-header p {
