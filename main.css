@@ -104,10 +104,11 @@ svg {
 .card-header h2 {
   font-size: 1.3rem;
   font-weight: 600;
+   color: #A9A9A9;
 }
 
 .card-header p {
-  color: #A9A9A9;
+  color: var(--text-muted);
   font-size: 0.85rem;
 }
 
