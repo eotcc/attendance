@@ -24,7 +24,6 @@ body {
     border-radius: 8px;
 
     font-size: 16px;
-
     box-sizing: border-box;
     outline: none;
 }
@@ -56,42 +55,5 @@ body {
 }
 
 .continue-button:hover {
-    background: #005ea6;
-}
-
-.payment-page {
-    padding: 40px 25px;
-    text-align: center;
-}
-
-.payment-page h1 {
-    margin-bottom: 10px;
-    color: #333;
-}
-
-.payment-page p {
-    color: #666;
-    margin-bottom: 30px;
-}
-
-.paypal-button {
-    width: 100%;
-    max-width: 300px;
-
-    padding: 13px;
-
-    border: none;
-    border-radius: 8px;
-
-    background: #0070ba;
-    color: white;
-
-    font-size: 16px;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.paypal-button:hover {
     background: #005ea6;
 }
