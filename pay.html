@@ -1,25 +1,27 @@
-<button type="button" class="pay-button" onclick="openPayment()">
-    Pay
-</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<div id="paymentContainer" class="payment-container">
-    <div class="payment-frame-box">
-        <button class="close-payment" onclick="closePayment()">×</button>
+    <title>Payment</title>
 
-        <iframe
-            src="payment.html"
-            class="payment-frame"
-            title="Payment">
-        </iframe>
+    <link rel="stylesheet" href="payment.css">
+</head>
+
+<body>
+
+    <div class="payment-page">
+
+        <h1>Make a Payment</h1>
+
+        <p>Select your payment method.</p>
+
+        <button class="paypal-button">
+            Pay with PayPal
+        </button>
+
     </div>
-</div>
 
-<script>
-function openPayment() {
-    document.getElementById("paymentContainer").style.display = "flex";
-}
-
-function closePayment() {
-    document.getElementById("paymentContainer").style.display = "none";
-}
-</script>
+</body>
+</html>
