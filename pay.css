@@ -1,14 +1,35 @@
-.pay-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: white;
+}
+
+.payment-page {
+    padding: 40px 25px;
+    text-align: center;
+}
+
+.payment-page h1 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.payment-page p {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.paypal-button {
+    width: 100%;
+    max-width: 300px;
+
+    padding: 13px;
+
+    border: none;
+    border-radius: 8px;
 
     background: #0070ba;
     color: white;
-    border: none;
-
-    padding: 10px 22px;
-    border-radius: 8px;
 
     font-size: 16px;
     font-weight: 600;
@@ -16,70 +37,6 @@
     cursor: pointer;
 }
 
-.pay-button:hover {
+.paypal-button:hover {
     background: #005ea6;
-}
-
-/* Payment popup */
-.payment-container {
-    display: none;
-
-    position: fixed;
-    z-index: 9999;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    background: rgba(0, 0, 0, 0.55);
-
-    justify-content: center;
-    align-items: center;
-}
-
-/* Popup */
-.payment-frame-box {
-    position: relative;
-
-    width: 90%;
-    max-width: 500px;
-    height: 600px;
-
-    background: white;
-
-    border-radius: 12px;
-    overflow: hidden;
-
-    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
-}
-
-/* Payment HTML inside popup */
-.payment-frame {
-    width: 100%;
-    height: 100%;
-
-    border: none;
-}
-
-/* Close button */
-.close-payment {
-    position: absolute;
-
-    top: 8px;
-    right: 10px;
-
-    z-index: 10;
-
-    width: 35px;
-    height: 35px;
-
-    border: none;
-    border-radius: 50%;
-
-    background: white;
-
-    font-size: 25px;
-    cursor: pointer;
 }
