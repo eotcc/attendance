@@ -1,0 +1,25 @@
+<button type="button" class="pay-button" onclick="openPayment()">
+    Pay
+</button>
+
+<div id="paymentContainer" class="payment-container">
+    <div class="payment-frame-box">
+        <button class="close-payment" onclick="closePayment()">×</button>
+
+        <iframe
+            src="payment.html"
+            class="payment-frame"
+            title="Payment">
+        </iframe>
+    </div>
+</div>
+
+<script>
+function openPayment() {
+    document.getElementById("paymentContainer").style.display = "flex";
+}
+
+function closePayment() {
+    document.getElementById("paymentContainer").style.display = "none";
+}
+</script>
