@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Registration</title>
+
+    <link rel="stylesheet" href="registration.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Student Registration</h1>
+
+        <input
+            type="text"
+            id="studentName"
+            placeholder="Student Name"
+        >
+
+        <input
+            type="text"
+            id="studentCode"
+            placeholder="Registration Code"
+        >
+
+        <button id="saveButton" onclick="saveStudent()">
+            Register Student
+        </button>
+
+        <button
+            class="cancel"
+            id="cancelButton"
+            onclick="cancelEdit()"
+            style="display:none;"
+        >
+            Cancel
+        </button>
+
+        <div id="message"></div>
+
+        <h2>Registered Students</h2>
+
+        <div id="studentList"></div>
+
+    </div>
+
+
+    <!-- Firebase -->
+
+    <script type="module">
+
+        import { initializeApp } from
+            "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            getDocs,
+            doc,
+            updateDoc,
+            deleteDoc,
+            serverTimestamp
+        } from
+            "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+
+        // YOUR FIREBASE CONFIG
+
+        const firebaseConfig = {
+
+             apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
+  authDomain: "saturdaychurchschool.firebaseapp.com",
+  projectId: "saturdaychurchschool",
+  storageBucket: "saturdaychurchschool.firebasestorage.app",
+  messagingSenderId: "1098070001648",
+  appId: "1:1098070001648:web:3c27a2115eab6337853f35",
+  measurementId: "G-G86K42XCE4"
+
+        };
+
+
+        // CONNECT TO FIREBASE
+
+        const app = initializeApp(firebaseConfig);
+
+        const db = getFirestore(app);
+
+        const studentsCollection =
+            collection(db, "students");
+
+
+        let editingStudentId = null;
+
+
+        // SAVE STUDENT
+
+        window.saveStudent = async function () {
+
+            const name =
+                document.getElementById("studentName")
+                .value.trim();
+
+            const code =
+                document.getElementById("studentCode")
+                .value.trim();
+
+
+            if (!name || !code) {
+
+                showMessage(
+                    "Please enter both name and code."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                // EDIT
+
+                if (editingStudentId) {
+
+                    const studentRef =
+                        doc(
+                            db,
+                            "students",
+                            editingStudentId
+                        );
+
+                    await updateDoc(studentRef, {
+
+                        name: name,
+
+                        code: code
+
+                    });
+
+
+                    showMessage(
+                        "Student updated successfully."
+                    );
+
+
+                    editingStudentId = null;
+
+
+                    document.getElementById("saveButton")
+                        .textContent = "Register Student";
+
+
+                    document.getElementById("cancelButton")
+                        .style.display = "none";
+
+                }
+
+                // NEW STUDENT
+
+                else {
+
+                    await addDoc(
+                        studentsCollection,
+                        {
+
+                            name: name,
+
+                            code: code,
+
+                            registeredAt:
+                                serverTimestamp()
+
+                        }
+                    );
+
+
+                    showMessage(
+                        "Student registered successfully."
+                    );
+
+                }
+
+
+                clearForm();
+
+                loadStudents();
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                showMessage(
+                    "Error: " + error.message
+                );
+
+            }
+
+        };
+
+
+        // LOAD STUDENTS
+
+        async function loadStudents() {
+
+            const studentList =
+                document.getElementById("studentList");
+
+            studentList.innerHTML =
+                "Loading...";
+
+
+            try {
+
+                const snapshot =
+                    await getDocs(
+                        studentsCollection
+                    );
+
+
+                studentList.innerHTML = "";
+
+
+                if (snapshot.empty) {
+
+                    studentList.innerHTML =
+                        "<p>No students registered yet.</p>";
+
+                    return;
+                }
+
+
+                snapshot.forEach((student) => {
+
+                    const data =
+                        student.data();
+
+
+                    const div =
+                        document.createElement("div");
+
+                    div.className = "student";
+
+
+                    div.innerHTML = `
+
+                        <div class="student-name">
+                            ${escapeHTML(data.name)}
+                        </div>
+
+                        <div class="student-code">
+                            Code:
+                            ${escapeHTML(data.code)}
+                        </div>
+
+                        <button
+                            class="edit"
+                            onclick="editStudent(
+                                '${student.id}',
+                                '${escapeAttribute(data.name)}',
+                                '${escapeAttribute(data.code)}'
+                            )">
+                            Edit
+                        </button>
+
+                        <button
+                            class="delete"
+                            onclick="deleteStudent(
+                                '${student.id}'
+                            )">
+                            Delete
+                        </button>
+
+                    `;
+
+
+                    studentList.appendChild(div);
+
+                });
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                studentList.innerHTML =
+                    "Could not load students.";
+
+            }
+
+        }
+
+
+        // EDIT STUDENT
+
+        window.editStudent = function (
+            id,
+            name,
+            code
+        ) {
+
+            editingStudentId = id;
+
+
+            document.getElementById("studentName")
+                .value = name;
+
+
+            document.getElementById("studentCode")
+                .value = code;
+
+
+            document.getElementById("saveButton")
+                .textContent = "Update Student";
+
+
+            document.getElementById("cancelButton")
+                .style.display = "inline-block";
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        };
+
+
+        // DELETE STUDENT
+
+        window.deleteStudent = async function (id) {
+
+            const confirmDelete =
+                confirm(
+                    "Are you sure you want to delete this student?"
+                );
+
+
+            if (!confirmDelete) {
+
+                return;
+
+            }
+
+
+            try {
+
+                await deleteDoc(
+                    doc(db, "students", id)
+                );
+
+
+                showMessage(
+                    "Student deleted successfully."
+                );
+
+
+                loadStudents();
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                showMessage(
+                    "Error deleting student: " +
+                    error.message
+                );
+
+            }
+
+        };
+
+
+        // CANCEL EDIT
+
+        window.cancelEdit = function () {
+
+            editingStudentId = null;
+
+            clearForm();
+
+
+            document.getElementById("saveButton")
+                .textContent = "Register Student";
+
+
+            document.getElementById("cancelButton")
+                .style.display = "none";
+
+        };
+
+
+        // CLEAR FORM
+
+        function clearForm() {
+
+            document.getElementById("studentName")
+                .value = "";
+
+            document.getElementById("studentCode")
+                .value = "";
+
+        }
+
+
+        // MESSAGE
+
+        function showMessage(message) {
+
+            document.getElementById("message")
+                .textContent = message;
+
+        }
+
+
+        // SECURITY HELPERS
+
+        function escapeHTML(text) {
+
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        function escapeAttribute(text) {
+
+            return text
+                .replace(/\\/g, "\\\\")
+                .replace(/'/g, "\\'");
+
+        }
+
+
+        // LOAD STUDENTS WHEN PAGE OPENS
+
+        loadStudents();
+
+    </script>
+
+</body>
+</html>
