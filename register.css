@@ -6,7 +6,7 @@ body {
     margin: 0;
     padding: 40px 20px;
     font-family: Arial, sans-serif;
-    background: #f4f6f8;
+    background: #f5f7fa;
     color: #222;
 }
 
@@ -17,12 +17,14 @@ body {
     padding: 35px;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    border-top: 6px solid #0000CD;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.10);
 }
 
 h1 {
     text-align: center;
     margin: 0 0 30px;
+    color: #0000CD;
     font-size: 28px;
 }
 
@@ -33,6 +35,7 @@ h1 {
 label {
     display: block;
     margin-bottom: 8px;
+    color: #0000CD;
     font-size: 16px;
     font-weight: bold;
 }
@@ -42,16 +45,18 @@ select {
     width: 100%;
     height: 48px;
     padding: 10px 12px;
-    border: 1px solid #ccc;
+    border: 2px solid #0000CD;
     border-radius: 7px;
     font-size: 16px;
     background: white;
+    color: #222;
 }
 
 input:focus,
 select:focus {
     outline: none;
-    border-color: #555;
+    border-color: #0000CD;
+    box-shadow: 0 0 0 2px rgba(0, 0, 205, 0.15);
 }
 
 #saveButton {
@@ -60,7 +65,7 @@ select:focus {
     margin-top: 5px;
     border: none;
     border-radius: 7px;
-    background: #333;
+    background: #0000CD;
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -68,13 +73,14 @@ select:focus {
 }
 
 #saveButton:hover {
-    background: #555;
+    background: #0000a8;
 }
 
 #message {
     min-height: 24px;
     margin-top: 18px;
     text-align: center;
+    color: #0000CD;
     font-weight: bold;
 }
 
@@ -93,4 +99,3 @@ select:focus {
         font-size: 24px;
     }
 }
-```
