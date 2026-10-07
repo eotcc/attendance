@@ -1,19 +1,97 @@
-.registration-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
+```css
+* {
+    box-sizing: border-box;
+}
 
-    padding: 10px 16px;
+body {
+    margin: 0;
+    padding: 40px 20px;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+}
 
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 35px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+    text-align: center;
+    margin: 0 0 30px;
+    font-size: 28px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+input,
+select {
+    width: 100%;
+    height: 48px;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 16px;
+    background: white;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #555;
+}
+
+#saveButton {
+    width: 100%;
+    height: 48px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 7px;
     background: #333;
     color: white;
-
-    text-decoration: none;
-    border-radius: 6px;
-
-    font-size: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.registration-button:hover {
+#saveButton:hover {
     background: #555;
 }
+
+#message {
+    min-height: 24px;
+    margin-top: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 20px 10px;
+    }
+
+    .container {
+        margin: 20px auto;
+        padding: 25px 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+}
+```
