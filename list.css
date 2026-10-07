@@ -1,0 +1,109 @@
+```css
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 40px 20px;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    color: #222;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 35px;
+    background: white;
+    border-radius: 12px;
+    border-top: 6px solid #0000CD;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.10);
+}
+
+h1 {
+    margin: 0 0 30px;
+    text-align: center;
+    color: #0000CD;
+    font-size: 30px;
+}
+
+.student-card {
+    margin-bottom: 15px;
+    padding: 20px;
+    background: white;
+    border: 2px solid #0000CD;
+    border-radius: 10px;
+}
+
+.student-name {
+    margin-bottom: 15px;
+    color: #0000CD;
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.student-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.student-info > div {
+    padding: 12px;
+    background: #f5f7fa;
+    border-radius: 7px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 5px;
+    color: #0000CD;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.loading,
+.empty,
+.error {
+    text-align: center;
+    padding: 20px;
+}
+
+.loading {
+    color: #0000CD;
+}
+
+.empty {
+    color: #666;
+}
+
+.error {
+    color: #b00020;
+}
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 20px 10px;
+    }
+
+    .container {
+        margin: 10px auto;
+        padding: 25px 18px;
+    }
+
+    h1 {
+        font-size: 25px;
+    }
+
+    .student-info {
+        grid-template-columns: 1fr;
+    }
+
+    .student-card {
+        padding: 16px;
+    }
+}
+```
