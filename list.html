@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Students</title>
+
+    <link rel="stylesheet" href="students.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Student Information</h1>
+
+        <div id="studentList">
+            <p class="loading">Loading students...</p>
+        </div>
+
+    </div>
+
+
+    <script type="module">
+
+        import { initializeApp } from
+        "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+
+        import {
+            getFirestore,
+            collection,
+            getDocs
+        } from
+        "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+
+        // FIREBASE CONFIG
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
+            authDomain: "saturdaychurchschool.firebaseapp.com",
+            projectId: "saturdaychurchschool",
+            storageBucket: "saturdaychurchschool.firebasestorage.app",
+            messagingSenderId: "1098070001648",
+            appId: "1:1098070001648:web:3c27a2115eab6337853f35",
+            measurementId: "G-G86K42XCE4"
+        };
+        // START FIREBASE
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        // GET STUDENTS COLLECTION
+        const studentsCollection =
+            collection(db, "students");
+        // DISPLAY STUDENTS
+
+        async function loadStudents() {
+
+            const studentList =
+                document.getElementById("studentList");
+            try {
+                const snapshot =
+                    await getDocs(studentsCollection);
+                studentList.innerHTML = "";
+                if (snapshot.empty) {
+
+                    studentList.innerHTML =
+                        "<p class='empty'>No students registered.</p>";
+
+                    return;
+                }
+                snapshot.forEach((student) => {
+                    const data = student.data();
+                    const studentCard =
+                        document.createElement("div");
+
+                    studentCard.className =
+                        "student-card";
+                    studentCard.innerHTML = `
+
+                        <div class="student-name">
+                            ${escapeHTML(data.name || "No Name")}
+                        </div>
+
+                        <div class="student-info">
+
+                            <div>
+                                <span class="label">
+                                    Grade
+                                </span>
+
+                                <span>
+                                    ${escapeHTML(data.grade || "Not provided")}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="label">
+                                    Parent Phone
+                                </span>
+                                <span>
+                                    ${escapeHTML(data.parentPhone || "Not provided")}
+                                </span>
+                            </div>
+                      </div>
+                    `;
+                    studentList.appendChild(studentCard);
+                });
+            }
+            catch (error) {
+                console.error(error);
+                studentList.innerHTML = `
+                    <p class="error">
+                        Error loading students.
+                    </p>
+                `;
+            }
+        }
+
+        // PROTECT DISPLAYED TEXT
+
+        function escapeHTML(text) {
+
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+       // LOAD STUDENTS
+        loadStudents();
+    </script>
+</body>
+</html>
