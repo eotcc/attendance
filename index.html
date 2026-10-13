@@ -152,6 +152,9 @@ function closePayment() {
       try {
         const studentDocRef = doc(db, "students", idCode);
         const studentDocSnap = await getDoc(studentDocRef);
+        console.log("Entered code:", idCode);
+console.log("Document path:", studentDocRef.path);
+console.log("Document exists:", studentDocSnap.exists());
 
         if (!studentDocSnap.exists()) {
           showMessage(`❌ ID Code "${idCode}" is not registered on the school roster. Access denied.`, 'error');
