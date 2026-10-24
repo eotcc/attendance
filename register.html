@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Student Registration</title>
+    <title>Nardos Tutoring - Student Registration</title>
 
     <link rel="stylesheet" href="register.css">
 </head>
@@ -14,97 +14,260 @@
 
     <div class="container">
 
-        <h1>Student Registration</h1>
+        <h1>Nardos Tutoring</h1>
 
-        <div class="form-group">
-            <label for="studentName">Student Name</label>
-            <input
-                type="text"
-                id="studentName"
-                placeholder="Enter student name"
-            >
-        </div>
+        <!-- SIGN-IN SECTION -->
+        <section id="loginSection">
 
-        <div class="form-group">
-            <label for="parentPhone">Parent Phone Number</label>
-            <input
-                type="tel"
-                id="parentPhone"
-                placeholder="Enter parent phone number"
-            >
-        </div>
+            <h2>Admin Sign In</h2>
 
-        <div class="form-group">
-            <label for="studentGrade">Grade</label>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="username"
+                    required
+                >
+            </div>
 
-            <select id="studentGrade">
-                <option value="">Select Grade</option>
-                <option value="Pre-K">Pre-K</option>
-                <option value="Kindergarten">Kindergarten</option>
-                <option value="1st Grade">1st Grade</option>
-                <option value="2nd Grade">2nd Grade</option>
-                <option value="3rd Grade">3rd Grade</option>
-                <option value="4th Grade">4th Grade</option>
-                <option value="5th Grade">5th Grade</option>
-                <option value="6th Grade">6th Grade</option>
-                <option value="7th Grade">7th Grade</option>
-                <option value="8th Grade">8th Grade</option>
-                <option value="9th Grade">9th Grade</option>
-                <option value="10th Grade">10th Grade</option>
-                <option value="11th Grade">11th Grade</option>
-                <option value="12th Grade">12th Grade</option>
-                <option value="College">College</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
 
-        <button id="saveButton">
-            Register Student
-        </button>
+            <button id="loginButton" type="button">
+                Sign In
+            </button>
 
-        <div id="message"></div>
+            <div id="loginMessage" role="status"></div>
+
+        </section>
+
+
+        <!-- REGISTRATION SECTION -->
+        <section id="registrationSection" hidden>
+
+            <h2>Student Registration</h2>
+
+            <p>You are signed in.</p>
+
+            <div class="form-group">
+                <label for="studentName">Student Name</label>
+
+                <input
+                    type="text"
+                    id="studentName"
+                    placeholder="Enter student name"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="parentPhone">Parent Phone Number</label>
+
+                <input
+                    type="tel"
+                    id="parentPhone"
+                    placeholder="Enter parent phone number"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="studentGrade">Grade</label>
+
+                <select id="studentGrade" required>
+                    <option value="">Select Grade</option>
+                    <option value="Pre-K">Pre-K</option>
+                    <option value="Kindergarten">Kindergarten</option>
+                    <option value="1st Grade">1st Grade</option>
+                    <option value="2nd Grade">2nd Grade</option>
+                    <option value="3rd Grade">3rd Grade</option>
+                    <option value="4th Grade">4th Grade</option>
+                    <option value="5th Grade">5th Grade</option>
+                    <option value="6th Grade">6th Grade</option>
+                    <option value="7th Grade">7th Grade</option>
+                    <option value="8th Grade">8th Grade</option>
+                    <option value="9th Grade">9th Grade</option>
+                    <option value="10th Grade">10th Grade</option>
+                    <option value="11th Grade">11th Grade</option>
+                    <option value="12th Grade">12th Grade</option>
+                    <option value="College">College</option>
+                </select>
+            </div>
+
+            <button id="saveButton" type="button">
+                Register Student
+            </button>
+
+            <div id="message" role="status"></div>
+
+            <br>
+
+            <button id="logoutButton" type="button">
+                Sign Out
+            </button>
+
+        </section>
 
     </div>
 
 
     <script type="module">
 
-        import { initializeApp } from
-        "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 
         import {
             getFirestore,
             collection,
             addDoc,
             serverTimestamp
-        } from
-        "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+        } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
 
-        // FIREBASE CONFIG
+        // FIREBASE CONFIGURATION
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCNckYTvnmafHNGZ5my_nkBJ5ZDcujFXtE",
-  authDomain: "tutoring-ee569.firebaseapp.com",
-  projectId: "tutoring-ee569",
-  storageBucket: "tutoring-ee569.firebasestorage.app",
-  messagingSenderId: "658435175936",
-  appId: "1:658435175936:web:b226b97d80219f8092cae5",
-  measurementId: "G-V9YFENGXP2"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyCNckYTvnmafHNGZ5my_nkBJ5ZDcujFXtE",
+            authDomain: "tutoring-ee569.firebaseapp.com",
+            projectId: "tutoring-ee569",
+            storageBucket: "tutoring-ee569.firebasestorage.app",
+            messagingSenderId: "658435175936",
+            appId: "1:658435175936:web:b226b97d80219f8092cae5",
+            measurementId: "G-V9YFENGXP2"
+        };
+
+
         // START FIREBASE
 
         const app = initializeApp(firebaseConfig);
 
+        const auth = getAuth(app);
+
         const db = getFirestore(app);
 
-        const studentsCollection =
-            collection(db, "students");
+        const studentsCollection = collection(db, "students");
+
+
+        // PAGE ELEMENTS
+
+        const loginSection =
+            document.getElementById("loginSection");
+
+        const registrationSection =
+            document.getElementById("registrationSection");
+
+        const loginMessage =
+            document.getElementById("loginMessage");
+
+        const message =
+            document.getElementById("message");
+
+
+        // SIGN IN
+
+        document.getElementById("loginButton")
+            .addEventListener("click", async () => {
+
+                const email =
+                    document.getElementById("email").value.trim();
+
+                const password =
+                    document.getElementById("password").value;
+
+                if (!email || !password) {
+                    loginMessage.textContent =
+                        "Please enter your email and password.";
+
+                    return;
+                }
+
+                const loginButton =
+                    document.getElementById("loginButton");
+
+                loginButton.disabled = true;
+
+                loginMessage.textContent = "Signing in...";
+
+                try {
+
+                    await signInWithEmailAndPassword(
+                        auth,
+                        email,
+                        password
+                    );
+
+                    loginMessage.textContent = "";
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    loginMessage.textContent =
+                        "Sign-in failed. Check your email and password.";
+
+                } finally {
+
+                    loginButton.disabled = false;
+
+                }
+
+            });
+
+
+        // SHOW THE CORRECT SECTION BASED ON SIGN-IN STATUS
+
+        onAuthStateChanged(auth, (user) => {
+
+            if (user) {
+
+                loginSection.hidden = true;
+
+                registrationSection.hidden = false;
+
+            } else {
+
+                loginSection.hidden = false;
+
+                registrationSection.hidden = true;
+
+            }
+
+        });
 
 
         // REGISTER STUDENT
 
         document.getElementById("saveButton")
-            .addEventListener("click", async function () {
+            .addEventListener("click", async () => {
+
+                // REQUIRE A SIGNED-IN USER
+
+                if (!auth.currentUser) {
+
+                    message.textContent =
+                        "Please sign in before registering a student.";
+
+                    return;
+
+                }
 
                 const name =
                     document.getElementById("studentName")
@@ -118,72 +281,90 @@ const firebaseConfig = {
                     document.getElementById("studentGrade")
                         .value;
 
-
-                // CHECK REQUIRED FIELDS
-
                 if (!name || !parentPhone || !grade) {
 
-                    showMessage(
-                        "Please complete all fields."
-                    );
+                    message.textContent =
+                        "Please complete all fields.";
 
                     return;
+
                 }
 
+                const saveButton =
+                    document.getElementById("saveButton");
+
+                saveButton.disabled = true;
+
+                message.textContent = "Registering student...";
 
                 try {
 
-                    await addDoc(
-                        studentsCollection,
-                        {
-                            name: name,
-                            parentPhone: parentPhone,
-                            grade: grade,
-                            registeredAt: serverTimestamp()
-                        }
-                    );
+                    await addDoc(studentsCollection, {
 
+                        name: name,
 
-                    showMessage(
-                        "Student registered successfully."
-                    );
+                        parentPhone: parentPhone,
 
+                        grade: grade,
 
-                    // CLEAR FORM
+                        registeredAt: serverTimestamp()
 
-                    document.getElementById("studentName")
-                        .value = "";
+                    });
 
-                    document.getElementById("parentPhone")
-                        .value = "";
+                    message.textContent =
+                        "Student registered successfully!";
 
-                    document.getElementById("studentGrade")
-                        .value = "";
+                    document.getElementById("studentName").value = "";
 
+                    document.getElementById("parentPhone").value = "";
+
+                    document.getElementById("studentGrade").value = "";
 
                 } catch (error) {
 
                     console.error(error);
 
-                    showMessage(
-                        "Error registering student: " +
-                        error.message
-                    );
+                    message.textContent =
+                        "Registration failed: " + error.message;
+
+                } finally {
+
+                    saveButton.disabled = false;
 
                 }
 
             });
 
 
-        function showMessage(message) {
+        // SIGN OUT
 
-            document.getElementById("message")
-                .textContent = message;
+        document.getElementById("logoutButton")
+            .addEventListener("click", async () => {
 
-        }
+                try {
+
+                    await signOut(auth);
+
+                    message.textContent = "";
+
+                    loginMessage.textContent = "";
+
+                    document.getElementById("email").value = "";
+
+                    document.getElementById("password").value = "";
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    message.textContent =
+                        "Unable to sign out. Please try again.";
+
+                }
+
+            });
 
     </script>
 
 </body>
-
 </html>
