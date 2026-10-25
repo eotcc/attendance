@@ -79,6 +79,41 @@ const firebaseConfig = {
 };
         const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+        // Admin login
+const loginForm = document.getElementById("adminLoginForm");
+const loginMessage = document.getElementById("loginMessage");
+const adminLogin = document.getElementById("adminLogin");
+const adminDashboard = document.querySelector(".container");
+
+// Check whether an admin is signed in
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        adminLogin.style.display = "none";
+        adminDashboard.style.display = "block";
+    } else {
+        adminLogin.style.display = "block";
+        adminDashboard.style.display = "none";
+    }
+});
+
+// Sign in using Firebase Authentication
+loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPassword").value;
+
+    loginMessage.textContent = "Signing in...";
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        loginMessage.textContent = "";
+    } catch (error) {
+        loginMessage.textContent =
+            "Sign-in failed. Check your email and password.";
+        console.error("Admin sign-in error:", error);
+    }
+});
     </script>
 </body>
 </html>
