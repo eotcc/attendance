@@ -133,7 +133,7 @@ function closePayment() {
     rosterBtn.addEventListener('click', () => {
       const inputPass = prompt("Enter Admin Password to access Roster:");
       if (inputPass === ADMIN_PASSWORD) {
-        window.location.href = "roster.html";
+        window.location.href = "Admin.html";
       } else if (inputPass !== null) {
         alert("Incorrect Password!");
       }
