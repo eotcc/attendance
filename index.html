@@ -1,10 +1,14 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Student Sign In Station</title>
-  <link rel="stylesheet" href="main.css" />
+
+  <link rel="stylesheet" href="main.css">
+
   <style>
     .admin-link-container {
       margin-top: 24px;
@@ -31,81 +35,119 @@
     }
   </style>
 </head>
+
 <body>
-<button type="button" class="pay-button" onclick="openPayment()">
+
+  <!-- Payment Button -->
+  <button type="button" class="pay-button" onclick="openPayment()">
     Pay
-</button>
+  </button>
 
-<div id="paymentContainer" class="payment-container">
+  <!-- Payment Popup -->
+  <div id="paymentContainer" class="payment-container">
     <div class="payment-frame-box">
-        <button class="close-payment" onclick="closePayment()">×</button>
+      <button
+        type="button"
+        class="close-payment"
+        onclick="closePayment()"
+        aria-label="Close payment"
+      >×</button>
 
-        <iframe
-            src="pay.html"
-            class="payment-frame"
-            title="Payment">
-        </iframe>
-    </div>
-</div>
-
-<script>
-function openPayment() {
-    document.getElementById("paymentContainer").style.display = "flex";
-}
-
-function closePayment() {
-    document.getElementById("paymentContainer").style.display = "none";
-}
-</script>
-<div class="card-header text-center">
-  <img src="logo.jpg" alt="Nardos Tutoring" class="company-logo">
-        <h1 class="company-name">አስጠኚ</h1>
-        
-      </div>
-  <div class="auth-container">
-    <div class="auth-card" id="signInCard">
-      <h2>   Student Sign In</h2>
-      <div class="card-header text-center">
-      </div>
-
-      <form class="auth-form" id="signInForm">
-        <div class="form-group">
-          <label for="student-id">Student ID Code</label>
-          <input 
-            type="text" 
-            id="student-id" 
-            placeholder="e.g. STU-8921" 
-            autocomplete="off"
-            required 
-            autofocus
-          />
-        </div>
-
-        <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
-      </form>
-
-      <div id="statusMessage" class="status-message hidden"></div>
-
-      <!-- Password Protected Roster Button -->
-      <div class="admin-link-container">
-        <button type="button" class="btn-secondary" id="rosterBtn">🔒Sign In</button>
-      </div>
+      <iframe
+        src="pay.html"
+        class="payment-frame"
+        title="Payment"
+      ></iframe>
     </div>
   </div>
 
-  <!-- Firebase Modular Web SDK -->
+  <script>
+    function openPayment() {
+      document.getElementById("paymentContainer").style.display = "flex";
+    }
+
+    function closePayment() {
+      document.getElementById("paymentContainer").style.display = "none";
+    }
+  </script>
+
+  <!-- School Logo -->
+  <div class="card-header text-center">
+    <img src="logo.jpg" alt="Nardos Tutoring" class="company-logo">
+    <h1 class="company-name">አስጠኚ</h1>
+  </div>
+
+  <!-- Student Sign-In Card -->
+  <div class="auth-container">
+    <div class="auth-card" id="signInCard">
+
+      <h2>Student Sign In</h2>
+
+      <div class="card-header text-center"></div>
+
+      <form class="auth-form" id="signInForm">
+
+        <div class="form-group">
+          <label for="student-id">Student ID Code</label>
+
+          <input
+            type="text"
+            id="student-id"
+            placeholder="e.g. STU-8921"
+            autocomplete="off"
+            required
+            autofocus
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          id="submitBtn"
+        >
+          Submit
+        </button>
+
+      </form>
+
+      <div
+        id="statusMessage"
+        class="status-message hidden"
+        role="status"
+        aria-live="polite"
+      ></div>
+
+      <!-- Admin Sign-In Link -->
+      <div class="admin-link-container">
+        <button
+          type="button"
+          class="btn-secondary"
+          id="rosterBtn"
+        >
+          🔒 Sign In
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Firebase Student Attendance -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { 
-      getFirestore, 
-      doc, 
-      getDoc, 
-      collection, 
-      addDoc, 
-      serverTimestamp 
+
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      collection,
+      addDoc,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Your Firebase Configuration
+    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
       authDomain: "saturdaychurchschool.firebaseapp.com",
@@ -120,44 +162,50 @@ function closePayment() {
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // DOM Elements
-    const signInForm = document.getElementById('signInForm');
-    const studentIdInput = document.getElementById('student-id');
-    const statusMessage = document.getElementById('statusMessage');
-    const submitBtn = document.getElementById('submitBtn');
-    const rosterBtn = document.getElementById('rosterBtn');
+    // Page Elements
+    const signInForm = document.getElementById("signInForm");
+    const studentIdInput = document.getElementById("student-id");
+    const statusMessage = document.getElementById("statusMessage");
+    const submitBtn = document.getElementById("submitBtn");
+    const rosterBtn = document.getElementById("rosterBtn");
 
-    // Password setup for Admin Access
-    const ADMIN_PASSWORD = "admin123"; // 🔑 Change this to your preferred password
-
-    rosterBtn.addEventListener('click', () => {
-      const inputPass = prompt("Enter Admin Password to access Roster:");
-      if (inputPass === ADMIN_PASSWORD) {
-        window.location.href = "Admin.html";
-      } else if (inputPass !== null) {
-        alert("Incorrect Password!");
-      }
+    // Open the Admin Login Page
+    // No hardcoded admin password is used here.
+    rosterBtn.addEventListener("click", () => {
+      window.location.href = "Admin.html";
     });
 
-    // Handle Form Submit and Firebase Verification
-    signInForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    // Student Attendance Submission
+    signInForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
       const idCode = studentIdInput.value.trim().toUpperCase();
 
-      if (!idCode) return;
+      if (!idCode) {
+        return;
+      }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Verifying ID...';
+      submitBtn.textContent = "Verifying ID...";
 
       try {
+
+        // Look up the student in Firestore
         const studentDocRef = doc(db, "students", idCode);
         const studentDocSnap = await getDoc(studentDocRef);
-        console.log("Entered code:", idCode);
-console.log("Document path:", studentDocRef.path);
-console.log("Document exists:", studentDocSnap.exists());
 
+        console.log("Entered code:", idCode);
+        console.log("Document path:", studentDocRef.path);
+        console.log("Document exists:", studentDocSnap.exists());
+
+        // Reject unregistered student codes
         if (!studentDocSnap.exists()) {
-          showMessage(`❌ ID Code "${idCode}" is not registered on the school roster. Access denied.`, 'error');
+
+          showMessage(
+            `❌ ID Code "${idCode}" is not registered on the school roster. Access denied.`,
+            "error"
+          );
+
           signInForm.reset();
           return;
         }
@@ -165,11 +213,17 @@ console.log("Document exists:", studentDocSnap.exists());
         const studentData = studentDocSnap.data();
         const studentName = studentData.name || "Student";
 
+        // Current date and time
         const now = new Date();
-        const currentTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        const currentTime = now.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+
         const currentDate = now.toLocaleDateString();
 
-        // Record entry into 'attendance' collection
+        // Record student attendance
         await addDoc(collection(db, "attendance"), {
           idCode: idCode,
           name: studentName,
@@ -178,30 +232,44 @@ console.log("Document exists:", studentDocSnap.exists());
           timestamp: serverTimestamp()
         });
 
-        showMessage(`✓ Welcome, ${studentName}! Signed in at ${currentTime}.`, 'success');
+        showMessage(
+          `✓ Welcome, ${studentName}! Signed in at ${currentTime}.`,
+          "success"
+        );
+
         signInForm.reset();
 
-      }  catch (error) {
-  console.error("Database lookup or write failed:", error);
+      } catch (error) {
 
-  showMessage(
-    `Database error: ${error.code || "unknown"} — ${error.message || error}`,
-    "error"
-  );
+        console.error("Database lookup or write failed:", error);
+
+        showMessage(
+          `Database error: ${error.code || "unknown"} — ${error.message || error}`,
+          "error"
+        );
+
       } finally {
+
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Sign In';
+        submitBtn.textContent = "Submit";
         studentIdInput.focus();
+
       }
     });
-    
-    function showMessage(msg, type) {
-      statusMessage.textContent = msg;
+
+    // Display Attendance Messages
+    function showMessage(message, type) {
+      statusMessage.textContent = message;
       statusMessage.className = `status-message ${type}`;
     }
+
   </script>
+
+  <!-- Student Registration -->
   <a href="register.html" class="registration-button">
     Student Registration
-</a>
+  </a>
+
 </body>
 </html>
+```
