@@ -1,119 +1,218 @@
+```html
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Nardos Tutoring - Admin</title>
 
-<title>Nardos Tutoring</title>
-
-<link rel="stylesheet" href="Admin.css">
-
-
+    <link rel="stylesheet" href="Admin.css">
 </head>
 
 <body>
-<!-- Admin Login Form -->
-<div id="adminLogin">
-    <h2>Admin Sign In</h2>
 
-    <form id="adminLoginForm">
-        <input
-            type="email"
-            id="adminEmail"
-            placeholder="Admin Email"
-            required
-        >
+    <!-- ADMIN LOGIN -->
+    <div id="adminLogin" class="login-container">
+        <h2>Admin Sign In</h2>
 
-        <input
-            type="password"
-            id="adminPassword"
-            placeholder="Password"
-            required
-        >
+        <form id="adminLoginForm">
+            <label for="adminEmail">Email Address</label>
+            <input
+                type="email"
+                id="adminEmail"
+                placeholder="Enter admin email"
+                autocomplete="username"
+                required
+            >
 
-        <button type="submit">Sign In</button>
+            <label for="adminPassword">Password</label>
+            <input
+                type="password"
+                id="adminPassword"
+                placeholder="Enter password"
+                autocomplete="current-password"
+                required
+            >
 
-        <p id="loginMessage" role="alert"></p>
-    </form>
-</div>
-<div class="container">
-    <h1>Nardos Tutoring</h1>
+            <button type="submit" id="loginButton">
+                Sign In
+            </button>
 
-    <div class="button-container">
-        <button onclick="location.href='register.html'">
-            Register Students
-        </button>
-
-        <button onclick="location.href='students.html'">
-            View Students
-        </button>
-
-        <button onclick="location.href='attendance.html'">
-            Attendance
-        </button>
-
-        <button onclick="location.href='homework.html'">
-            Homework
-        </button>
+            <p id="loginMessage" role="alert"></p>
+        </form>
     </div>
-</div>
+
+
+    <!-- ADMIN DASHBOARD -->
+    <div class="container" id="adminDashboard">
+
+        <h1>Nardos Tutoring</h1>
+        <h2>Admin Dashboard</h2>
+
+        <div class="button-container">
+            <button type="button"
+                onclick="location.href='register.html'">
+                Register Students
+            </button>
+
+            <button type="button"
+                onclick="location.href='students.html'">
+                View Students
+            </button>
+
+            <button type="button"
+                onclick="location.href='attendance.html'">
+                Attendance
+            </button>
+
+            <button type="button"
+                onclick="location.href='homework.html'">
+                Homework
+            </button>
+        </div>
+
+        <button type="button" id="signOutButton" class="sign-out-button">
+            Sign Out
+        </button>
+
+        <p id="dashboardMessage" role="status"></p>
+    </div>
+
+
+    <!-- FIREBASE AUTHENTICATION -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
-  authDomain: "saturdaychurchschool.firebaseapp.com",
-  projectId: "saturdaychurchschool",
-  storageBucket: "saturdaychurchschool.firebasestorage.app",
-  messagingSenderId: "1098070001648",
-  appId: "1:1098070001648:web:ce1e14aea3c7a374853f35",
-  measurementId: "G-QGES69P8QR"
-};
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+
+        // YOUR FIREBASE PROJECT CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
+            authDomain: "saturdaychurchschool.firebaseapp.com",
+            projectId: "saturdaychurchschool",
+            storageBucket: "saturdaychurchschool.firebasestorage.app",
+            messagingSenderId: "1098070001648",
+            appId: "1:1098070001648:web:ce1e14aea3c7a374853f35",
+            measurementId: "G-QGES69P8QR"
+        };
+
+
+        // INITIALIZE FIREBASE
         const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-        // Admin login
-const loginForm = document.getElementById("adminLoginForm");
-const loginMessage = document.getElementById("loginMessage");
-const adminLogin = document.getElementById("adminLogin");
-const adminDashboard = document.querySelector(".container");
+        const auth = getAuth(app);
 
-// Check whether an admin is signed in
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        adminLogin.style.display = "none";
-        adminDashboard.style.display = "block";
-    } else {
-        adminLogin.style.display = "block";
-        adminDashboard.style.display = "none";
-    }
-});
 
-// Sign in using Firebase Authentication
-loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
+        // GET PAGE ELEMENTS
+        const loginForm = document.getElementById("adminLoginForm");
+        const loginMessage = document.getElementById("loginMessage");
+        const loginContainer = document.getElementById("adminLogin");
+        const dashboard = document.getElementById("adminDashboard");
+        const loginButton = document.getElementById("loginButton");
+        const signOutButton = document.getElementById("signOutButton");
+        const dashboardMessage = document.getElementById("dashboardMessage");
 
-    const email = document.getElementById("adminEmail").value.trim();
-    const password = document.getElementById("adminPassword").value;
 
-    loginMessage.textContent = "Signing in...";
+        // SHOW LOGIN OR DASHBOARD BASED ON AUTHENTICATION
+        onAuthStateChanged(auth, (user) => {
 
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-        loginMessage.textContent = "";
-    } catch (error) {
-        loginMessage.textContent =
-            "Sign-in failed. Check your email and password.";
-        console.error("Admin sign-in error:", error);
-    }
-});
+            if (user) {
+                // A Firebase user is already signed in.
+                loginContainer.style.display = "none";
+                dashboard.style.display = "block";
+
+            } else {
+                // No Firebase user is signed in.
+                loginContainer.style.display = "block";
+                dashboard.style.display = "none";
+            }
+
+        });
+
+
+        // SIGN IN WITH EMAIL AND PASSWORD
+        loginForm.addEventListener("submit", async (event) => {
+
+            event.preventDefault();
+
+            const email = document.getElementById("adminEmail").value.trim();
+            const password = document.getElementById("adminPassword").value;
+
+            loginMessage.textContent = "Signing in...";
+            loginButton.disabled = true;
+
+            try {
+
+                await signInWithEmailAndPassword(auth, email, password);
+
+                loginMessage.textContent = "";
+
+                // Firebase's authentication listener will show the dashboard.
+
+            } catch (error) {
+
+                console.error("Firebase sign-in error:", error);
+
+                if (
+                    error.code === "auth/invalid-credential" ||
+                    error.code === "auth/wrong-password" ||
+                    error.code === "auth/user-not-found"
+                ) {
+                    loginMessage.textContent =
+                        "Incorrect email or password.";
+                } else if (error.code === "auth/invalid-email") {
+                    loginMessage.textContent =
+                        "Please enter a valid email address.";
+                } else if (error.code === "auth/too-many-requests") {
+                    loginMessage.textContent =
+                        "Too many attempts. Please try again later.";
+                } else {
+                    loginMessage.textContent =
+                        "Sign-in failed. Please try again.";
+                }
+
+            } finally {
+
+                loginButton.disabled = false;
+
+            }
+
+        });
+
+
+        // SIGN OUT
+        signOutButton.addEventListener("click", async () => {
+
+            try {
+
+                await signOut(auth);
+
+                loginForm.reset();
+                loginMessage.textContent = "";
+                dashboardMessage.textContent = "";
+
+            } catch (error) {
+
+                console.error("Sign-out error:", error);
+
+                dashboardMessage.textContent =
+                    "Could not sign out. Please try again.";
+
+            }
+
+        });
+
     </script>
+
 </body>
 </html>
+```
