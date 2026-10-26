@@ -4,19 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Directory</title>
-  <!-- Link external CSS file -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <div class="container">
-    <h1>Student Roster</h1>
-    <div id="studentContainer" class="student-list">
-      <p class="loading">Loading students...</p>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="card-header">
+        <div class="roster-header-row">
+          <h2>Student Roster</h2>
+          <span class="badge" id="studentCount">0 Active</span>
+        </div>
+        <p>List of registered students fetched from Firebase</p>
+      </div>
+
+      <div id="studentContainer" class="roster-list">
+        <div class="empty-state">Loading students...</div>
+      </div>
+
+      <div class="card-footer">
+        <a href="#" class="link-muted">Directory Management v1.0</a>
+      </div>
     </div>
   </div>
 
-  <!-- External JS script module -->
   <script type="module" src="app.js"></script>
 </body>
 </html>
