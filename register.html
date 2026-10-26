@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,48 +17,10 @@
 
         <h1>Nardos Tutoring</h1>
 
-        <!-- SIGN-IN SECTION -->
-        <section id="loginSection">
-
-            <h2>Admin Sign In</h2>
-
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="Enter your email"
-                    autocomplete="username"
-                    required
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Enter your password"
-                    autocomplete="current-password"
-                    required
-                >
-            </div>
-
-            <button id="loginButton" type="button">
-                Sign In
-            </button>
-
-            <div id="loginMessage" role="status"></div>
-
-        </section>
-
-
-        <!-- REGISTRATION SECTION -->
-        <section id="registrationSection" hidden>
+        <!-- STUDENT REGISTRATION SECTION -->
+        <section id="registrationSection">
 
             <h2>Student Registration</h2>
-
-            <p>You are signed in.</p>
 
             <div class="form-group">
                 <label for="studentName">Student Name</label>
@@ -66,6 +29,7 @@
                     type="text"
                     id="studentName"
                     placeholder="Enter student name"
+                    autocomplete="name"
                     required
                 >
             </div>
@@ -77,6 +41,7 @@
                     type="tel"
                     id="parentPhone"
                     placeholder="Enter parent phone number"
+                    autocomplete="tel"
                     required
                 >
             </div>
@@ -108,19 +73,14 @@
                 Register Student
             </button>
 
-            <div id="message" role="status"></div>
-
-            <br>
-
-            <button id="logoutButton" type="button">
-                Sign Out
-            </button>
+            <div id="message" role="status" aria-live="polite"></div>
 
         </section>
 
     </div>
 
 
+    <!-- FIREBASE FIRESTORE -->
     <script type="module">
 
         import {
@@ -133,13 +93,6 @@
             addDoc,
             serverTimestamp
         } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-
-        import {
-            getAuth,
-            signInWithEmailAndPassword,
-            onAuthStateChanged,
-            signOut
-        } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
 
         // FIREBASE CONFIGURATION
@@ -155,11 +108,9 @@
         };
 
 
-        // START FIREBASE
+        // INITIALIZE FIREBASE
 
         const app = initializeApp(firebaseConfig);
-
-        const auth = getAuth(app);
 
         const db = getFirestore(app);
 
@@ -168,203 +119,111 @@
 
         // PAGE ELEMENTS
 
-        const loginSection =
-            document.getElementById("loginSection");
+        const studentNameInput =
+            document.getElementById("studentName");
 
-        const registrationSection =
-            document.getElementById("registrationSection");
+        const parentPhoneInput =
+            document.getElementById("parentPhone");
 
-        const loginMessage =
-            document.getElementById("loginMessage");
+        const studentGradeInput =
+            document.getElementById("studentGrade");
+
+        const saveButton =
+            document.getElementById("saveButton");
 
         const message =
             document.getElementById("message");
 
 
-        // SIGN IN
+        // REGISTER STUDENT
 
-        document.getElementById("loginButton")
-            .addEventListener("click", async () => {
+        saveButton.addEventListener("click", async () => {
 
-                const email =
-                    document.getElementById("email").value.trim();
+            const name = studentNameInput.value.trim();
 
-                const password =
-                    document.getElementById("password").value;
+            const parentPhone = parentPhoneInput.value.trim();
 
-                if (!email || !password) {
-                    loginMessage.textContent =
-                        "Please enter your email and password.";
-
-                    return;
-                }
-
-                const loginButton =
-                    document.getElementById("loginButton");
-
-                loginButton.disabled = true;
-
-                loginMessage.textContent = "Signing in...";
-
-                try {
-
-                    await signInWithEmailAndPassword(
-                        auth,
-                        email,
-                        password
-                    );
-
-                    loginMessage.textContent = "";
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    loginMessage.textContent =
-                        "Sign-in failed. Check your email and password.";
-
-                } finally {
-
-                    loginButton.disabled = false;
-
-                }
-
-            });
+            const grade = studentGradeInput.value;
 
 
-        // SHOW THE CORRECT SECTION BASED ON SIGN-IN STATUS
+            // VALIDATE REQUIRED FIELDS
 
-        onAuthStateChanged(auth, (user) => {
+            if (!name || !parentPhone || !grade) {
 
-            if (user) {
+                message.textContent =
+                    "Please complete all fields.";
 
-                loginSection.hidden = true;
+                return;
 
-                registrationSection.hidden = false;
+            }
 
-            } else {
 
-                loginSection.hidden = false;
+            // PREVENT DUPLICATE SUBMISSIONS
 
-                registrationSection.hidden = true;
+            saveButton.disabled = true;
+
+            saveButton.textContent = "Registering...";
+
+            message.textContent = "";
+
+
+            try {
+
+                // SAVE STUDENT TO FIRESTORE
+
+                await addDoc(studentsCollection, {
+
+                    name: name,
+
+                    parentPhone: parentPhone,
+
+                    grade: grade,
+
+                    registeredAt: serverTimestamp()
+
+                });
+
+
+                // SUCCESS MESSAGE
+
+                message.textContent =
+                    "Student registered successfully!";
+
+
+                // CLEAR THE FORM
+
+                studentNameInput.value = "";
+
+                parentPhoneInput.value = "";
+
+                studentGradeInput.value = "";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Student registration error:",
+                    error
+                );
+
+                message.textContent =
+                    "Registration failed. " +
+                    "Please check your internet connection " +
+                    "and Firestore security rules.";
+
+            } finally {
+
+                saveButton.disabled = false;
+
+                saveButton.textContent = "Register Student";
 
             }
 
         });
 
-
-        // REGISTER STUDENT
-
-        document.getElementById("saveButton")
-            .addEventListener("click", async () => {
-
-                // REQUIRE A SIGNED-IN USER
-
-                if (!auth.currentUser) {
-
-                    message.textContent =
-                        "Please sign in before registering a student.";
-
-                    return;
-
-                }
-
-                const name =
-                    document.getElementById("studentName")
-                        .value.trim();
-
-                const parentPhone =
-                    document.getElementById("parentPhone")
-                        .value.trim();
-
-                const grade =
-                    document.getElementById("studentGrade")
-                        .value;
-
-                if (!name || !parentPhone || !grade) {
-
-                    message.textContent =
-                        "Please complete all fields.";
-
-                    return;
-
-                }
-
-                const saveButton =
-                    document.getElementById("saveButton");
-
-                saveButton.disabled = true;
-
-                message.textContent = "Registering student...";
-
-                try {
-
-                    await addDoc(studentsCollection, {
-
-                        name: name,
-
-                        parentPhone: parentPhone,
-
-                        grade: grade,
-
-                        registeredAt: serverTimestamp()
-
-                    });
-
-                    message.textContent =
-                        "Student registered successfully!";
-
-                    document.getElementById("studentName").value = "";
-
-                    document.getElementById("parentPhone").value = "";
-
-                    document.getElementById("studentGrade").value = "";
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    message.textContent =
-                        "Registration failed: " + error.message;
-
-                } finally {
-
-                    saveButton.disabled = false;
-
-                }
-
-            });
-
-
-        // SIGN OUT
-
-        document.getElementById("logoutButton")
-            .addEventListener("click", async () => {
-
-                try {
-
-                    await signOut(auth);
-
-                    message.textContent = "";
-
-                    loginMessage.textContent = "";
-
-                    document.getElementById("email").value = "";
-
-                    document.getElementById("password").value = "";
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    message.textContent =
-                        "Unable to sign out. Please try again.";
-
-                }
-
-            });
-
     </script>
 
 </body>
+
 </html>
+```
