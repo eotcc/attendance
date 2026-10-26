@@ -1,101 +1,192 @@
+```css
+/* GENERAL PAGE */
+
 * {
     box-sizing: border-box;
 }
 
 body {
     margin: 0;
-    padding: 40px 20px;
+    padding: 30px 15px;
     font-family: Arial, sans-serif;
-    background: #f5f7fa;
-    color: #222;
+    background-color: #f4f6f9;
+    color: #333;
 }
+
+
+/* MAIN CONTAINER */
 
 .container {
     width: 100%;
     max-width: 600px;
-    margin: 40px auto;
-    padding: 35px;
-    background: white;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #ffffff;
     border-radius: 12px;
-    border-top: 6px solid #0000CD;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.10);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
 }
+
+
+/* HEADINGS */
 
 h1 {
+    margin-top: 0;
+    margin-bottom: 25px;
     text-align: center;
-    margin: 0 0 30px;
-    color: #0000CD;
-    font-size: 28px;
+    color: #4169e1;
+    font-size: 30px;
 }
+
+h2 {
+    margin-bottom: 25px;
+    text-align: center;
+    color: #333333;
+    font-size: 23px;
+}
+
+
+/* FORM GROUPS */
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 22px;
 }
 
-label {
+.form-group > label {
     display: block;
     margin-bottom: 8px;
-    color: #0000CD;
-    font-size: 16px;
     font-weight: bold;
+    color: #333333;
 }
 
-input,
+
+/* INPUTS AND SELECT */
+
+input[type="text"],
+input[type="tel"],
+input[type="time"],
 select {
     width: 100%;
-    height: 48px;
-    padding: 10px 12px;
-    border: 2px solid #0000CD;
-    border-radius: 7px;
+    min-height: 44px;
+    padding: 11px 12px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    background-color: #ffffff;
     font-size: 16px;
-    background: white;
-    color: #222;
+    color: #333333;
 }
 
 input:focus,
 select:focus {
     outline: none;
-    border-color: #0000CD;
-    box-shadow: 0 0 0 2px rgba(0, 0, 205, 0.15);
+    border-color: #4169e1;
+    box-shadow: 0 0 0 2px rgba(65, 105, 225, 0.15);
 }
 
-#saveButton {
-    width: 100%;
-    height: 48px;
-    margin-top: 5px;
-    border: none;
-    border-radius: 7px;
-    background: #0000CD;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
+
+/* DESCRIPTION */
+
+.field-description {
+    margin: 0 0 12px;
+    color: #666666;
+    font-size: 14px;
+}
+
+
+/* ATTENDANCE DAYS */
+
+.days-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.day-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+    padding: 10px;
+    border: 1px solid #dddddd;
+    border-radius: 6px;
+    background-color: #fafafa;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.day-option:hover {
+    background-color: #eef2ff;
+    border-color: #4169e1;
+}
+
+.day-option input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    accent-color: #4169e1;
     cursor: pointer;
 }
 
-#saveButton:hover {
-    background: #0000a8;
+
+/* REGISTER BUTTON */
+
+#saveButton {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 5px;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #4169e1;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
+
+#saveButton:hover:not(:disabled) {
+    background-color: #3154bd;
+}
+
+#saveButton:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+
+/* STATUS MESSAGE */
 
 #message {
-    min-height: 24px;
     margin-top: 18px;
     text-align: center;
-    color: #0000CD;
-    font-weight: bold;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
-@media (max-width: 600px) {
+
+/* MOBILE LAYOUT */
+
+@media (max-width: 480px) {
 
     body {
-        padding: 20px 10px;
+        padding: 15px 10px;
     }
 
     .container {
-        margin: 20px auto;
-        padding: 25px 20px;
+        padding: 22px 18px;
     }
 
     h1 {
-        font-size: 24px;
+        font-size: 26px;
     }
+
+    h2 {
+        font-size: 21px;
+    }
+
+    .days-grid {
+        grid-template-columns: 1fr;
+    }
+
 }
+```
