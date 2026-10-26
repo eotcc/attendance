@@ -8,8 +8,8 @@ const firebaseConfig = {
   projectId: "saturdaychurchschool",
   storageBucket: "saturdaychurchschool.firebasestorage.app",
   messagingSenderId: "1098070001648",
-  appId: "1:1098070001648:web:3c27a2115eab6337853f35",
-  measurementId: "G-G86K42XCE4"
+  appId: "1:1098070001648:web:ce1e14aea3c7a374853f35",
+  measurementId: "G-QGES69P8QR"
 };
 
 const app = initializeApp(firebaseConfig);
