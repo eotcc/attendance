@@ -1,5 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 // Replace with your Firebase project configuration
 const firebaseConfig = {
@@ -13,7 +13,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(saturdaychurchschool);
+const db = getFirestore(app);
 
 const studentContainer = document.getElementById('studentContainer');
 const studentCountBadge = document.getElementById('studentCount');
@@ -42,7 +42,9 @@ async function fetchStudents() {
       const endTime = student.endTime || '--:--';
       
       // Extract days properly
-      const days = Array.isArray(student.days) ? student.days : [student[0], student[1]].filter(Boolean);
+     const days = Array.isArray(student.attendanceDays)
+    ? student.attendanceDays
+    : [];
       const daysFormatted = days.length ? days.map(d => `<span class="day-tag">${d}</span>`).join(' ') : 'No Days';
 
       // Get first letter for avatar
