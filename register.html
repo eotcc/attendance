@@ -160,6 +160,8 @@ import {
     getFirestore,
     collection,
     addDoc,
+    doc,
+    setDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
@@ -271,19 +273,12 @@ if (!currentUser) {
 const studentsCollection = collection(db, "registration");
                 const studentDoc = doc(studentsCollection, name.trim());
                 await addDoc(studentsCollection, {
-
                     name: name,
-
                     parentPhone: parentPhone,
-
                     grade: grade,
-
                     attendanceDays: attendanceDays,
-
                     startTime: startTime,
-
                     endTime: endTime,
-
                     registeredAt: serverTimestamp()
 
                 });
