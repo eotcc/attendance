@@ -13,7 +13,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = getFirestore(saturdaychurchschool);
 
 const studentContainer = document.getElementById('studentContainer');
 const studentCountBadge = document.getElementById('studentCount');
