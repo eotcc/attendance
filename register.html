@@ -289,11 +289,11 @@
 
 
             } catch (error) {
+    console.error("Registration error:", error);
 
-                console.error(
-                    "Student registration error:",
-                    error
-                );
+    statusMessage.textContent =
+        "Registration failed: " + error.code + " — " + error.message;
+}
 
                 message.textContent =
                     "Registration failed. Please check your internet connection and Firestore security rules.";
