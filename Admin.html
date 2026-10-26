@@ -42,7 +42,7 @@
 
 
     <!-- ADMIN DASHBOARD -->
-    <div class="container" id="adminDashboard">
+    <div class="container" id="adminDashboard" style="display: none;">
 
         <h1>Nardos Tutoring</h1>
         <h2>Admin Dashboard</h2>
@@ -119,21 +119,19 @@
         const dashboardMessage = document.getElementById("dashboardMessage");
 
 
-        // SHOW LOGIN OR DASHBOARD BASED ON AUTHENTICATION
-        onAuthStateChanged(auth, (user) => {
+  // SHOW LOGIN OR DASHBOARD BASED ON AUTHENTICATION
+onAuthStateChanged(auth, (user) => {
 
-            if (user) {
-                // A Firebase user is already signed in.
-                loginContainer.style.display = "none";
-                dashboard.style.display = "block";
+    if (user) {
+        loginContainer.style.display = "none";
+        dashboard.style.display = "block";
 
-            } else {
-                // No Firebase user is signed in.
-                loginContainer.style.display = "block";
-                dashboard.style.display = "none";
-            }
+    } else {
+        loginContainer.style.display = "block";
+        dashboard.style.display = "none";
+    }
 
-        });
+});
 
 
         // SIGN IN WITH EMAIL AND PASSWORD
