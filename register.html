@@ -288,25 +288,17 @@
                 });
 
 
-            } catch (error) {
-    console.error("Registration error:", error);
-
-    statusMessage.textContent =
-        "Registration failed: " + error.code + " — " + error.message;
-}
-
-                message.textContent =
-                    "Registration failed. Please check your internet connection and Firestore security rules.";
-
-            } finally {
-
-                saveButton.disabled = false;
-                saveButton.textContent = "Register Student";
-
-            }
-
+            }catch (error) { 
+                console.error("Registration error:", error);
+                message.textContent = 
+                    "Registration failed: " + 
+                    (error.code || "unknown-error") + 
+                    " — " + error.message; 
+            } finally { 
+                saveButton.disabled = false; 
+                saveButton.textContent = "Register Student"; 
+            } 
         });
-
     </script>
 
 </body>
