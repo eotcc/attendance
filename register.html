@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,11 +17,11 @@
 
         <h1>Nardos Tutoring</h1>
 
-        <!-- STUDENT REGISTRATION SECTION -->
         <section id="registrationSection">
 
             <h2>Student Registration</h2>
 
+            <!-- STUDENT NAME -->
             <div class="form-group">
                 <label for="studentName">Student Name</label>
 
@@ -33,6 +34,7 @@
                 >
             </div>
 
+            <!-- PARENT PHONE -->
             <div class="form-group">
                 <label for="parentPhone">Parent Phone Number</label>
 
@@ -45,6 +47,7 @@
                 >
             </div>
 
+            <!-- GRADE -->
             <div class="form-group">
                 <label for="studentGrade">Grade</label>
 
@@ -68,6 +71,76 @@
                 </select>
             </div>
 
+            <!-- ATTENDANCE DAYS -->
+            <div class="form-group">
+                <label>Attendance Days</label>
+
+                <p class="field-description">
+                    Select all days the student will attend.
+                </p>
+
+                <div class="days-grid">
+
+                    <label class="day-option">
+                        <input type="checkbox" name="attendanceDay" value="Monday">
+                        Monday
+                    </label>
+
+                    <label class="day-option">
+                        <input type="checkbox" name="attendanceDay" value="Tuesday">
+                        Tuesday
+                    </label>
+
+                    <label class="day-option">
+                        <input type="checkbox" name="attendanceDay" value="Wednesday">
+                        Wednesday
+                    </label>
+
+                    <label class="day-option">
+                        <input type="checkbox" name="attendanceDay" value="Thursday">
+                        Thursday
+                    </label>
+
+                    <label class="day-option">
+                        <input type="checkbox" name="attendanceDay" value="Friday">
+                        Friday
+                    </label>
+
+                    <label class="day-option">
+                        <input type="checkbox" name="attendanceDay" value="Saturday">
+                        Saturday
+                    </label>
+
+                    <label class="day-option">
+                        <input type="checkbox" name="attendanceDay" value="Sunday">
+                        Sunday
+                    </label>
+
+                </div>
+            </div>
+
+            <!-- ATTENDANCE TIME -->
+            <div class="form-group">
+                <label for="startTime">Start Time</label>
+
+                <input
+                    type="time"
+                    id="startTime"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="endTime">End Time</label>
+
+                <input
+                    type="time"
+                    id="endTime"
+                    required
+                >
+            </div>
+
+            <!-- REGISTER BUTTON -->
             <button id="saveButton" type="button">
                 Register Student
             </button>
@@ -78,8 +151,7 @@
 
     </div>
 
-
-    <!-- FIREBASE FIRESTORE -->
+    <!-- FIREBASE -->
     <script type="module">
 
         import {
@@ -110,7 +182,6 @@
         // INITIALIZE FIREBASE
 
         const app = initializeApp(firebaseConfig);
-
         const db = getFirestore(app);
 
         const studentsCollection = collection(db, "students");
@@ -118,20 +189,13 @@
 
         // PAGE ELEMENTS
 
-        const studentNameInput =
-            document.getElementById("studentName");
-
-        const parentPhoneInput =
-            document.getElementById("parentPhone");
-
-        const studentGradeInput =
-            document.getElementById("studentGrade");
-
-        const saveButton =
-            document.getElementById("saveButton");
-
-        const message =
-            document.getElementById("message");
+        const studentNameInput = document.getElementById("studentName");
+        const parentPhoneInput = document.getElementById("parentPhone");
+        const studentGradeInput = document.getElementById("studentGrade");
+        const startTimeInput = document.getElementById("startTime");
+        const endTimeInput = document.getElementById("endTime");
+        const saveButton = document.getElementById("saveButton");
+        const message = document.getElementById("message");
 
 
         // REGISTER STUDENT
@@ -139,30 +203,51 @@
         saveButton.addEventListener("click", async () => {
 
             const name = studentNameInput.value.trim();
-
             const parentPhone = parentPhoneInput.value.trim();
-
             const grade = studentGradeInput.value;
+            const startTime = startTimeInput.value;
+            const endTime = endTimeInput.value;
+
+            const attendanceDays = Array.from(
+                document.querySelectorAll(
+                    'input[name="attendanceDay"]:checked'
+                )
+            ).map(checkbox => checkbox.value);
 
 
             // VALIDATE REQUIRED FIELDS
 
-            if (!name || !parentPhone || !grade) {
+            if (
+                !name ||
+                !parentPhone ||
+                !grade ||
+                attendanceDays.length === 0 ||
+                !startTime ||
+                !endTime
+            ) {
 
                 message.textContent =
-                    "Please complete all fields.";
+                    "Please complete all fields and select at least one attendance day.";
 
                 return;
+            }
 
+
+            // VALIDATE TIME
+
+            if (endTime <= startTime) {
+
+                message.textContent =
+                    "End time must be later than start time.";
+
+                return;
             }
 
 
             // PREVENT DUPLICATE SUBMISSIONS
 
             saveButton.disabled = true;
-
             saveButton.textContent = "Registering...";
-
             message.textContent = "";
 
 
@@ -178,6 +263,12 @@
 
                     grade: grade,
 
+                    attendanceDays: attendanceDays,
+
+                    startTime: startTime,
+
+                    endTime: endTime,
+
                     registeredAt: serverTimestamp()
 
                 });
@@ -189,13 +280,19 @@
                     "Student registered successfully!";
 
 
-                // CLEAR THE FORM
+                // CLEAR FORM
 
                 studentNameInput.value = "";
-
                 parentPhoneInput.value = "";
-
                 studentGradeInput.value = "";
+                startTimeInput.value = "";
+                endTimeInput.value = "";
+
+                document.querySelectorAll(
+                    'input[name="attendanceDay"]'
+                ).forEach(checkbox => {
+                    checkbox.checked = false;
+                });
 
 
             } catch (error) {
@@ -206,14 +303,11 @@
                 );
 
                 message.textContent =
-                    "Registration failed. " +
-                    "Please check your internet connection " +
-                    "and Firestore security rules.";
+                    "Registration failed. Please check your internet connection and Firestore security rules.";
 
             } finally {
 
                 saveButton.disabled = false;
-
                 saveButton.textContent = "Register Student";
 
             }
@@ -223,5 +317,5 @@
     </script>
 
 </body>
-
 </html>
+```
