@@ -83,13 +83,14 @@
         import {
             initializeApp
         } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-
-        import {
-            getAuth,
-            signInWithEmailAndPassword,
-            onAuthStateChanged,
-            signOut
-        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import {
+    getAuth,
+    setPersistence,
+    browserSessionPersistence,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 
         // YOUR FIREBASE PROJECT CONFIGURATION
@@ -104,9 +105,12 @@
         };
 
 
-        // INITIALIZE FIREBASE
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+  // INITIALIZE FIREBASE
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Keep the login session only for the current browser session
+await setPersistence(auth, browserSessionPersistence);
 
 
         // GET PAGE ELEMENTS
