@@ -1,33 +1,140 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Directory</title>
-  <link rel="stylesheet" href="students.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registered Students</title>
 </head>
+
 <body>
 
-  <div class="auth-container">
-    <div class="auth-card">
-      <div class="card-header">
-        <div class="roster-header-row">
-          <h2>Student Roster</h2>
-          <span class="badge" id="studentCount">0 Active</span>
-        </div>
-        <p>List of registered students fetched from Firebase</p>
-      </div>
+    <h1>Nardos Tutoring - Registered Students</h1>
 
-      <div id="studentContainer" class="roster-list">
-        <div class="empty-state">Loading students...</div>
-      </div>
+    <button id="refreshButton" type="button">Refresh List</button>
 
-      <div class="card-footer">
-        <a href="#" class="link-muted">Directory Management v1.0</a>
-      </div>
-    </div>
-  </div>
+    <p id="studentCount">Loading students...</p>
+    <p id="statusMessage">Connecting to Firebase...</p>
 
-  <script type="module" src="students.js"></script>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Grade</th>
+                <th>Parent Phone</th>
+                <th>Attendance Days</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Registration Date</th>
+            </tr>
+        </thead>
+
+        <tbody id="studentList"></tbody>
+    </table>
+
+    <script type="module">
+        import { initializeApp } from
+            "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+
+        import {
+            getFirestore,
+            collection,
+            getDocs
+        } from
+            "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
+            authDomain: "saturdaychurchschool.firebaseapp.com",
+            projectId: "saturdaychurchschool",
+            storageBucket: "saturdaychurchschool.firebasestorage.app",
+            messagingSenderId: "1098070001648",
+            appId: "1:1098070001648:web:ce1e14aea3c7a374853f35",
+            measurementId: "G-QGES69P8QR"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const studentList = document.getElementById("studentList");
+        const studentCount = document.getElementById("studentCount");
+        const statusMessage = document.getElementById("statusMessage");
+
+        async function loadStudents() {
+            studentList.replaceChildren();
+            statusMessage.textContent = "Loading registrations...";
+            studentCount.textContent = "Loading students...";
+
+            try {
+                const snapshot = await getDocs(
+                    collection(db, "registration")
+                );
+
+                if (snapshot.empty) {
+                    studentCount.textContent = "0 students";
+                    statusMessage.textContent =
+                        "No registrations found.";
+                    return;
+                }
+
+                snapshot.forEach((documentSnapshot) => {
+                    const student = documentSnapshot.data();
+                    const row = document.createElement("tr");
+
+                    const days = Array.isArray(student.attendanceDays)
+                        ? student.attendanceDays.join(", ")
+                        : "";
+
+                    let registeredDate = "";
+
+                    if (
+                        student.registeredAt &&
+                        typeof student.registeredAt.toDate === "function"
+                    ) {
+                        registeredDate =
+                            student.registeredAt.toDate().toLocaleDateString();
+                    }
+
+                    const values = [
+                        student.name,
+                        student.grade,
+                        student.parentPhone,
+                        days,
+                        student.startTime,
+                        student.endTime,
+                        registeredDate
+                    ];
+
+                    values.forEach((value) => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value ?? "";
+                        row.appendChild(cell);
+                    });
+
+                    studentList.appendChild(row);
+                });
+
+                studentCount.textContent =
+                    snapshot.size + " registered student(s)";
+
+                statusMessage.textContent =
+                    "Registrations loaded successfully.";
+
+            } catch (error) {
+                console.error("Firebase error:", error);
+
+                studentCount.textContent = "Unable to load students";
+                statusMessage.textContent =
+                    "Error: " + error.code + " — " + error.message;
+            }
+        }
+
+        document.getElementById("refreshButton")
+            .addEventListener("click", loadStudents);
+
+        loadStudents();
+    </script>
+
 </body>
 </html>
+```
