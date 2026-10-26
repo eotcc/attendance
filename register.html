@@ -268,7 +268,7 @@ if (!currentUser) {
             try {
 
                 // SAVE STUDENT TO FIRESTORE
-
+const studentsCollection = collection(db, "registration");
                 await addDoc(studentsCollection, {
 
                     name: name,
