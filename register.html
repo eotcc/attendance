@@ -272,7 +272,7 @@ if (!currentUser) {
                 // SAVE STUDENT TO FIRESTORE
 const studentsCollection = collection(db, "registration");
                 const studentDoc = doc(studentsCollection, name.trim());
-                await setDoc(studentsCollection, {
+                await setDoc(studentDoc, {
                     name: name,
                     parentPhone: parentPhone,
                     grade: grade,
