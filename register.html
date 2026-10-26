@@ -149,41 +149,52 @@
 
        import {
     initializeApp
-} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 
 import {
     getAuth,
     onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 import {
     getFirestore,
     collection,
     addDoc,
     serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 
         // FIREBASE CONFIGURATION
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCNckYTvnmafHNGZ5my_nkBJ5ZDcujFXtE",
-            authDomain: "tutoring-ee569.firebaseapp.com",
-            projectId: "tutoring-ee569",
-            storageBucket: "tutoring-ee569.firebasestorage.app",
-            messagingSenderId: "658435175936",
-            appId: "1:658435175936:web:b226b97d80219f8092cae5",
-            measurementId: "G-V9YFENGXP2"
-        };
+    apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
+    authDomain: "saturdaychurchschool.firebaseapp.com",
+    projectId: "saturdaychurchschool",
+    storageBucket: "saturdaychurchschool.firebasestorage.app",
+    messagingSenderId: "1098070001648",
+    appId: "1:1098070001648:web:ce1e14aea3c7a374853f35",
+    measurementId: "G-QGES69P8QR"
+};
 
 
         // INITIALIZE FIREBASE
 
-        const app = initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-        const studentsCollection = collection(db, "students");
+const studentsCollection = collection(db, "students");
+
+// Check the administrator's Firebase login session
+let currentUser = null;
+
+onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+
+    console.log("Firebase project:", app.options.projectId);
+    console.log("Signed-in user:", user ? "Signed in" : "Not signed in");
+    console.log("Signed-in UID:", user?.uid || "No UID");
+});
 
 
         // PAGE ELEMENTS
@@ -200,7 +211,11 @@ const auth = getAuth(app);
         // REGISTER STUDENT
 
         saveButton.addEventListener("click", async () => {
-
+if (!currentUser) {
+    message.textContent =
+        "You are not signed in. Please sign in through the administrator page first.";
+    return;
+}
             const name = studentNameInput.value.trim();
             const parentPhone = parentPhoneInput.value.trim();
             const grade = studentGradeInput.value;
