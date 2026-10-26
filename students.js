@@ -78,10 +78,13 @@ async function fetchStudents() {
 
     studentCountBadge.textContent = `${count} Active`;
 
-  } catch (error) {
-    console.error("Error fetching students: ", error);
-    studentContainer.innerHTML = `<div class="empty-state" style="color:var(--danger-color);">Error loading students from Firebase.</div>`;
-  }
+  } } catch (error) {
+    console.error("Firebase error code:", error.code);
+    console.error("Firebase error message:", error.message);
+
+    studentContainer.textContent =
+        "Firebase Error: " + error.code + " — " + error.message;
+}
 }
 
 fetchStudents();
