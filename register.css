@@ -117,13 +117,16 @@ select:focus {
     border-color: #4169e1;
 }
 
+
 .day-option input[type="checkbox"] {
-    width: 17px;
-    height: 17px;
+    width: 13px;
+    height: 13px;
     margin: 0;
+    flex-shrink: 0;
     accent-color: #4169e1;
     cursor: pointer;
 }
+
 
 
 /* REGISTER BUTTON */
