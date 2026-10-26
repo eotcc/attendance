@@ -200,11 +200,7 @@ const auth = getAuth(app);
         // REGISTER STUDENT
 
         saveButton.addEventListener("click", async () => {
-              if (!auth.currentUser) {
-    message.textContent =
-        "Please sign in through the administrator login page first.";
-    return;
-}
+
             const name = studentNameInput.value.trim();
             const parentPhone = parentPhoneInput.value.trim();
             const grade = studentGradeInput.value;
