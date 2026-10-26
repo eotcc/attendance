@@ -147,16 +147,21 @@
     <!-- FIREBASE -->
     <script type="module">
 
-        import {
-            initializeApp
-        } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+       import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 
-        import {
-            getFirestore,
-            collection,
-            addDoc,
-            serverTimestamp
-        } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+import {
+    getAuth,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 
         // FIREBASE CONFIGURATION
@@ -175,7 +180,8 @@
         // INITIALIZE FIREBASE
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
         const studentsCollection = collection(db, "students");
 
@@ -194,7 +200,11 @@
         // REGISTER STUDENT
 
         saveButton.addEventListener("click", async () => {
-
+              if (!auth.currentUser) {
+    message.textContent =
+        "Please sign in through the administrator login page first.";
+    return;
+}
             const name = studentNameInput.value.trim();
             const parentPhone = parentPhoneInput.value.trim();
             const grade = studentGradeInput.value;
