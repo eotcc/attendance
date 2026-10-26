@@ -20,7 +20,7 @@ const studentCountBadge = document.getElementById('studentCount');
 
 async function fetchStudents() {
   try {
-    const querySnapshot = await getDocs(collection(db, "students"));
+    const querySnapshot = await getDocs(collection(db, "registration"));
     
     if (querySnapshot.empty) {
       studentContainer.innerHTML = '<div class="empty-state">No students registered yet.</div>';
