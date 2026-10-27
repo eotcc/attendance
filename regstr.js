@@ -17,7 +17,9 @@ let records = JSON.parse(localStorage.getItem('student_registrations') || '[]');
 document.addEventListener('DOMContentLoaded', () => {
     renderDayCheckboxes();
     updateRecordsBadge();
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 });
 
 // 1. Render Day Selector Checkboxes
@@ -60,7 +62,7 @@ function renderScheduleTimeInputs() {
                 <p class="text-xs text-slate-400 mt-1">Select one or more days above to configure start and end times.</p>
             </div>
         `;
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
     }
 
@@ -86,7 +88,8 @@ function renderScheduleTimeInputs() {
             </div>
         `;
     }).join('');
-    lucide.createIcons();
+    
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function updateDayTime(dayId, field, value) {
@@ -121,7 +124,7 @@ function handleFormSubmit(event) {
     // Generate code directly in JS variable
     const generatedCode = generateUniqueCode(firstName, lastName);
 
-    // Data object structure ready for Firebase document insertion
+    // Data object structure ready for storage / Firebase
     const registrationPayload = {
         id: generatedCode,
         createdAt: new Date().toISOString(),
@@ -142,15 +145,16 @@ function handleFormSubmit(event) {
     updateRecordsBadge();
     showToast(`Registration Complete! Code generated: ${generatedCode}`, 'success');
     
-    // Auto-switch to Records tab
+    // Automatically redirect back to the Admin Dashboard page after a short delay
     setTimeout(() => {
-        switchTab('records');
-    }, 1200);
+        window.location.href = 'admin.html';
+    }, 1500);
 }
 
 // Reset Form Controls
 function resetForm() {
-    document.getElementById('registrationForm').reset();
+    const form = document.getElementById('registrationForm');
+    if (form) form.reset();
     selectedDaysState = {};
     DAYS.forEach(day => {
         const el = document.getElementById(`check-${day.id}`);
@@ -172,7 +176,7 @@ function renderRecords(dataToRender = records) {
                 <p class="text-slate-400 text-xs mt-1">Submit a registration form to view recorded student entries here.</p>
             </div>
         `;
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
     }
 
@@ -215,7 +219,8 @@ function renderRecords(dataToRender = records) {
             </div>
         </div>
     `).join('');
-    lucide.createIcons();
+    
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 // Helper: Format 24hr time to 12hr AM/PM
@@ -230,7 +235,9 @@ function formatTime(timeStr) {
 
 // Filter Records Search
 function filterRecords() {
-    const query = document.getElementById('search-input').value.toLowerCase();
+    const searchInput = document.getElementById('search-input');
+    if (!searchInput) return;
+    const query = searchInput.value.toLowerCase();
     const filtered = records.filter(r => 
         r.fullName.toLowerCase().includes(query) || 
         r.id.toLowerCase().includes(query) ||
@@ -266,18 +273,20 @@ function switchTab(tabName) {
     const regBtn = document.getElementById('nav-register-btn');
     const recBtn = document.getElementById('nav-records-btn');
 
+    if (!registerTab || !recordsTab) return;
+
     if (tabName === 'register') {
         registerTab.classList.remove('hidden');
         recordsTab.classList.add('hidden');
         
-        regBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-white text-indigo-600 shadow-sm";
-        recBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900";
+        if (regBtn) regBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-white text-indigo-600 shadow-sm";
+        if (recBtn) recBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900";
     } else {
         recordsTab.classList.remove('hidden');
         registerTab.classList.add('hidden');
         
-        recBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-white text-indigo-600 shadow-sm";
-        regBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900";
+        if (recBtn) recBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-white text-indigo-600 shadow-sm";
+        if (regBtn) regBtn.className = "flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900";
         
         renderRecords();
     }
@@ -308,7 +317,7 @@ function showToast(message, type = 'success') {
         toastIcon.setAttribute('data-lucide', 'check-circle-2');
         toastIcon.className = "w-5 h-5 text-emerald-400";
     }
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 
     toast.classList.remove('translate-x-full');
     setTimeout(() => {
