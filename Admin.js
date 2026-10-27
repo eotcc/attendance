@@ -41,7 +41,7 @@ const dashboardMessage = document.getElementById("dashboardMessage");
 const emailInput = document.getElementById("adminEmail");
 const passwordInput = document.getElementById("adminPassword");
 
-// UNIFIED LOGOUT & CLEANUP
+// UNIFIED LOGOUT & CLEANUP FUNCTION
 const handleLogout = async () => {
     try {
         await signOut(auth);
@@ -54,12 +54,17 @@ const handleLogout = async () => {
     if (loginForm) loginForm.reset();
     if (loginMessage) loginMessage.textContent = "";
     if (dashboardMessage) dashboardMessage.textContent = "";
+    
+    // Forcefully show login and hide dashboard immediately
+    if (loginContainer) loginContainer.style.display = "block";
+    if (dashboard) dashboard.style.display = "none";
 };
 
-// FORCE A FRESH RELOAD ON BACK/FORWARD CACHE RESTORATION
-window.addEventListener("pageshow", (event) => {
+// FORCE LOGIN SCREEN ON BACK / FORWARD NAVIGATION
+window.addEventListener("pageshow", async (event) => {
     if (event.persisted) {
-        window.location.reload();
+        await handleLogout();
+        window.location.reload(); // Ensures a completely fresh clean slate
     }
 });
 
