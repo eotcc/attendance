@@ -38,17 +38,26 @@ const dashboard = document.getElementById("adminDashboard");
 const loginButton = document.getElementById("loginButton");
 const signOutButton = document.getElementById("signOutButton");
 const dashboardMessage = document.getElementById("dashboardMessage");
+const emailInput = document.getElementById("adminEmail");
+const passwordInput = document.getElementById("adminPassword");
 
-// AUTHENTICATION STATE LISTENER
+// CLEAR INPUTS IF USER CLICKS BROWSER BACK BUTTON
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+        if (emailInput) emailInput.value = "";
+        if (passwordInput) passwordInput.value = "";
+        if (loginForm) loginForm.reset();
+    }
+});
+
 // AUTHENTICATION STATE LISTENER
 onAuthStateChanged(auth, (user) => {
     if (user) {
         loginContainer.style.display = "none";
         dashboard.style.display = "block";
-        // Redirect to your dashboard page
-        window.location.href = "dashboard.html";
     } else {
         loginContainer.style.display = "block";
+        dashboard.style.display = "none";
     }
 });
 
@@ -56,8 +65,8 @@ onAuthStateChanged(auth, (user) => {
 loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const email = document.getElementById("adminEmail").value.trim();
-    const password = document.getElementById("adminPassword").value;
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
     loginMessage.textContent = "Signing in...";
     loginButton.disabled = true;
@@ -93,7 +102,12 @@ loginForm.addEventListener("submit", async (event) => {
 signOutButton.addEventListener("click", async () => {
     try {
         await signOut(auth);
-        loginForm.reset();
+        
+        // Explicitly clear the email and password text fields
+        if (emailInput) emailInput.value = "";
+        if (passwordInput) passwordInput.value = "";
+        if (loginForm) loginForm.reset();
+        
         loginMessage.textContent = "";
         dashboardMessage.textContent = "";
     } catch (error) {
