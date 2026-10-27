@@ -40,13 +40,13 @@ const signOutButton = document.getElementById("signOutButton");
 const dashboardMessage = document.getElementById("dashboardMessage");
 
 // AUTHENTICATION STATE LISTENER
+// AUTHENTICATION STATE LISTENER
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        loginContainer.style.display = "none";
-        dashboard.style.display = "block";
+        // Redirect to your dashboard page
+        window.location.href = "dashboard.html";
     } else {
         loginContainer.style.display = "block";
-        dashboard.style.display = "none";
     }
 });
 
