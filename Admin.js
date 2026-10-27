@@ -41,12 +41,8 @@ const dashboardMessage = document.getElementById("dashboardMessage");
 const emailInput = document.getElementById("adminEmail");
 const passwordInput = document.getElementById("adminPassword");
 
-// SYNCHRONOUSLY HIDE DASHBOARD ON IMMEDIATE LOAD (PREVENTS FLASHING)
-if (dashboard) dashboard.style.display = "none";
-if (loginContainer) loginContainer.style.display = "block";
-
-// UNIFIED LOGOUT & HISTORY CLEANUP
-const handleLogout = async () => {
+// UNIFIED LOGOUT & BACK NAVIGATION CLEANUP
+const handleLogoutOrBack = async () => {
     try {
         await signOut(auth);
     } catch (error) {
@@ -58,30 +54,23 @@ const handleLogout = async () => {
     if (loginForm) loginForm.reset();
     if (loginMessage) loginMessage.textContent = "";
     if (dashboardMessage) dashboardMessage.textContent = "";
-    
-    if (loginContainer) loginContainer.style.display = "block";
-    if (dashboard) dashboard.style.display = "none";
-
-    // Overwrite history state so forward/back buttons cannot re-expose the dashboard
-    history.replaceState(null, "", window.location.href);
 };
 
-// PREVENT CACHED FORWARD/BACK STATES FROM SHOWING DASHBOARD
+// MAKE BACK NAVIGATION DO THE EXACT SAME THING AS LOGOUT
 window.addEventListener("pageshow", async (event) => {
     if (event.persisted) {
-        await handleLogout();
-        window.location.reload(); // Forces a fresh secure state check
+        await handleLogoutOrBack();
     }
 });
 
 // AUTHENTICATION STATE LISTENER
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        if (loginContainer) loginContainer.style.display = "none";
-        if (dashboard) dashboard.style.display = "block";
+        loginContainer.style.display = "none";
+        dashboard.style.display = "block";
     } else {
-        if (loginContainer) loginContainer.style.display = "block";
-        if (dashboard) dashboard.style.display = "none";
+        loginContainer.style.display = "block";
+        dashboard.style.display = "none";
     }
 });
 
@@ -124,5 +113,5 @@ loginForm.addEventListener("submit", async (event) => {
 
 // SIGN OUT HANDLER
 signOutButton.addEventListener("click", async () => {
-    await handleLogout();
+    await handleLogoutOrBack();
 });
