@@ -41,7 +41,11 @@ const dashboardMessage = document.getElementById("dashboardMessage");
 const emailInput = document.getElementById("adminEmail");
 const passwordInput = document.getElementById("adminPassword");
 
-// UNIFIED LOGOUT & CLEANUP FUNCTION
+// SYNCHRONOUSLY HIDE DASHBOARD ON IMMEDIATE LOAD (PREVENTS FLASHING)
+if (dashboard) dashboard.style.display = "none";
+if (loginContainer) loginContainer.style.display = "block";
+
+// UNIFIED LOGOUT & HISTORY CLEANUP
 const handleLogout = async () => {
     try {
         await signOut(auth);
@@ -55,27 +59,29 @@ const handleLogout = async () => {
     if (loginMessage) loginMessage.textContent = "";
     if (dashboardMessage) dashboardMessage.textContent = "";
     
-    // Forcefully show login and hide dashboard immediately
     if (loginContainer) loginContainer.style.display = "block";
     if (dashboard) dashboard.style.display = "none";
+
+    // Overwrite history state so forward/back buttons cannot re-expose the dashboard
+    history.replaceState(null, "", window.location.href);
 };
 
-// FORCE LOGIN SCREEN ON BACK / FORWARD NAVIGATION
+// PREVENT CACHED FORWARD/BACK STATES FROM SHOWING DASHBOARD
 window.addEventListener("pageshow", async (event) => {
     if (event.persisted) {
         await handleLogout();
-        window.location.reload(); // Ensures a completely fresh clean slate
+        window.location.reload(); // Forces a fresh secure state check
     }
 });
 
 // AUTHENTICATION STATE LISTENER
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        loginContainer.style.display = "none";
-        dashboard.style.display = "block";
+        if (loginContainer) loginContainer.style.display = "none";
+        if (dashboard) dashboard.style.display = "block";
     } else {
-        loginContainer.style.display = "block";
-        dashboard.style.display = "none";
+        if (loginContainer) loginContainer.style.display = "block";
+        if (dashboard) dashboard.style.display = "none";
     }
 });
 
