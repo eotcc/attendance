@@ -41,12 +41,25 @@ const dashboardMessage = document.getElementById("dashboardMessage");
 const emailInput = document.getElementById("adminEmail");
 const passwordInput = document.getElementById("adminPassword");
 
-// CLEAR INPUTS IF USER CLICKS BROWSER BACK BUTTON
-window.addEventListener("pageshow", (event) => {
+// UNIFIED LOGOUT & BACK NAVIGATION CLEANUP
+const handleLogoutOrBack = async () => {
+    try {
+        await signOut(auth);
+    } catch (error) {
+        // Ignore if already signed out
+    }
+    
+    if (emailInput) emailInput.value = "";
+    if (passwordInput) passwordInput.value = "";
+    if (loginForm) loginForm.reset();
+    if (loginMessage) loginMessage.textContent = "";
+    if (dashboardMessage) dashboardMessage.textContent = "";
+};
+
+// MAKE BACK NAVIGATION DO THE EXACT SAME THING AS LOGOUT
+window.addEventListener("pageshow", async (event) => {
     if (event.persisted) {
-        if (emailInput) emailInput.value = "";
-        if (passwordInput) passwordInput.value = "";
-        if (loginForm) loginForm.reset();
+        await handleLogoutOrBack();
     }
 });
 
@@ -100,18 +113,5 @@ loginForm.addEventListener("submit", async (event) => {
 
 // SIGN OUT HANDLER
 signOutButton.addEventListener("click", async () => {
-    try {
-        await signOut(auth);
-        
-        // Explicitly clear the email and password text fields
-        if (emailInput) emailInput.value = "";
-        if (passwordInput) passwordInput.value = "";
-        if (loginForm) loginForm.reset();
-        
-        loginMessage.textContent = "";
-        dashboardMessage.textContent = "";
-    } catch (error) {
-        console.error("Sign-out error:", error);
-        dashboardMessage.textContent = "Could not sign out. Please try again.";
-    }
+    await handleLogoutOrBack();
 });
