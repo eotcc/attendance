@@ -41,8 +41,8 @@ const dashboardMessage = document.getElementById("dashboardMessage");
 const emailInput = document.getElementById("adminEmail");
 const passwordInput = document.getElementById("adminPassword");
 
-// UNIFIED LOGOUT & BACK NAVIGATION CLEANUP
-const handleLogoutOrBack = async () => {
+// UNIFIED LOGOUT & CLEANUP
+const handleLogout = async () => {
     try {
         await signOut(auth);
     } catch (error) {
@@ -56,10 +56,10 @@ const handleLogoutOrBack = async () => {
     if (dashboardMessage) dashboardMessage.textContent = "";
 };
 
-// MAKE BACK NAVIGATION DO THE EXACT SAME THING AS LOGOUT
-window.addEventListener("pageshow", async (event) => {
+// FORCE A FRESH RELOAD ON BACK/FORWARD CACHE RESTORATION
+window.addEventListener("pageshow", (event) => {
     if (event.persisted) {
-        await handleLogoutOrBack();
+        window.location.reload();
     }
 });
 
@@ -113,5 +113,5 @@ loginForm.addEventListener("submit", async (event) => {
 
 // SIGN OUT HANDLER
 signOutButton.addEventListener("click", async () => {
-    await handleLogoutOrBack();
+    await handleLogout();
 });
