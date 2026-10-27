@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Nardos Tutoring - Admin</title>
-
     <link rel="stylesheet" href="Admin.css">
 </head>
-
 <body>
 
-    <!-- ADMIN LOGIN -->
+    <!-- ADMIN LOGIN CONTAINER -->
     <div id="adminLogin" class="login-container">
         <h2>Admin Sign In</h2>
 
@@ -35,182 +32,41 @@
                 Sign In
             </button>
 
-            <p id="loginMessage" role="alert"></p>
+            <p id="loginMessage" class="message error" role="alert"></p>
         </form>
     </div>
 
+    <!-- ADMIN DASHBOARD CONTAINER -->
+    <div id="adminDashboard" class="container" style="display: none;">
+        <header class="dashboard-header">
+            <h1>Nardos Tutoring</h1>
+            <h2>Admin Dashboard</h2>
+        </header>
 
-    <!-- ADMIN DASHBOARD -->
-    <div class="container" id="adminDashboard" style="display: none;">
-
-        <h1>Nardos Tutoring</h1>
-        <h2>Admin Dashboard</h2>
-
-        <div class="button-container">
-            <button type="button"
-                onclick="location.href='register.html'">
+        <nav class="button-container">
+            <button type="button" onclick="location.href='register.html'">
                 Register Students
             </button>
-
-            <button type="button"
-                onclick="location.href='students.html'">
+            <button type="button" onclick="location.href='students.html'">
                 View Students
             </button>
-
-            <button type="button"
-                onclick="location.href='roster.html'">
+            <button type="button" onclick="location.href='roster.html'">
                 Roster
             </button>
-
-            <button type="button"
-                onclick="location.href='homework.html'">
+            <button type="button" onclick="location.href='homework.html'">
                 Homework
             </button>
-        </div>
+        </nav>
 
         <button type="button" id="signOutButton" class="sign-out-button">
             Sign Out
         </button>
 
-        <p id="dashboardMessage" role="status"></p>
+        <p id="dashboardMessage" class="message" role="status"></p>
     </div>
 
-
-    <!-- FIREBASE AUTHENTICATION -->
-    <script type="module">
- import {
-            initializeApp
-        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-
-       
-import {
-    getAuth,
-    setPersistence,
-    browserSessionPersistence,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
-} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-
-
-        // YOUR FIREBASE PROJECT CONFIGURATION
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5DlfgTwgbohbj4fpqQdXzuox63P6GJQA",
-            authDomain: "saturdaychurchschool.firebaseapp.com",
-            projectId: "saturdaychurchschool",
-            storageBucket: "saturdaychurchschool.firebasestorage.app",
-            messagingSenderId: "1098070001648",
-            appId: "1:1098070001648:web:ce1e14aea3c7a374853f35",
-            measurementId: "G-QGES69P8QR"
-        };
-
-
-  // INITIALIZE FIREBASE
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-// Keep the login session only for the current browser session
-await setPersistence(auth, browserSessionPersistence);
-
-
-        // GET PAGE ELEMENTS
-        const loginForm = document.getElementById("adminLoginForm");
-        const loginMessage = document.getElementById("loginMessage");
-        const loginContainer = document.getElementById("adminLogin");
-        const dashboard = document.getElementById("adminDashboard");
-        const loginButton = document.getElementById("loginButton");
-        const signOutButton = document.getElementById("signOutButton");
-        const dashboardMessage = document.getElementById("dashboardMessage");
-
-
-  // SHOW LOGIN OR DASHBOARD BASED ON AUTHENTICATION
-onAuthStateChanged(auth, (user) => {
-
-    if (user) {
-        loginContainer.style.display = "none";
-        dashboard.style.display = "block";
-
-    } else {
-        loginContainer.style.display = "block";
-        dashboard.style.display = "none";
-    }
-
-});
-
-
-        // SIGN IN WITH EMAIL AND PASSWORD
-        loginForm.addEventListener("submit", async (event) => {
-
-            event.preventDefault();
-
-            const email = document.getElementById("adminEmail").value.trim();
-            const password = document.getElementById("adminPassword").value;
-
-            loginMessage.textContent = "Signing in...";
-            loginButton.disabled = true;
-
-            try {
-
-                await signInWithEmailAndPassword(auth, email, password);
-
-                loginMessage.textContent = "";
-
-                // Firebase's authentication listener will show the dashboard.
-
-            } catch (error) {
-
-                console.error("Firebase sign-in error:", error);
-
-                if (
-                    error.code === "auth/invalid-credential" ||
-                    error.code === "auth/wrong-password" ||
-                    error.code === "auth/user-not-found"
-                ) {
-                    loginMessage.textContent =
-                        "Incorrect email or password.";
-                } else if (error.code === "auth/invalid-email") {
-                    loginMessage.textContent =
-                        "Please enter a valid email address.";
-                } else if (error.code === "auth/too-many-requests") {
-                    loginMessage.textContent =
-                        "Too many attempts. Please try again later.";
-                } else {
-                    loginMessage.textContent =
-                        "Sign-in failed. Please try again.";
-                }
-
-            } finally {
-
-                loginButton.disabled = false;
-
-            }
-
-        });
-
-
-        // SIGN OUT
-        signOutButton.addEventListener("click", async () => {
-
-            try {
-
-                await signOut(auth);
-
-                loginForm.reset();
-                loginMessage.textContent = "";
-                dashboardMessage.textContent = "";
-
-            } catch (error) {
-
-                console.error("Sign-out error:", error);
-
-                dashboardMessage.textContent =
-                    "Could not sign out. Please try again.";
-
-            }
-
-        });
-
-    </script>
+    <!-- EXTERNAL JS SCRIPT (ES MODULE) -->
+    <script type="module" src="admin.js"></script>
 
 </body>
 </html>
