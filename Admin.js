@@ -43,6 +43,8 @@ const dashboardMessage = document.getElementById("dashboardMessage");
 // AUTHENTICATION STATE LISTENER
 onAuthStateChanged(auth, (user) => {
     if (user) {
+        loginContainer.style.display = "none";
+        dashboard.style.display = "block";
         // Redirect to your dashboard page
         window.location.href = "dashboard.html";
     } else {
